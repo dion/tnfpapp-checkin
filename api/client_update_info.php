@@ -32,14 +32,15 @@ $data = json_decode(file_get_contents("php://input"));
 $jwt=isset($data->jwt) ? $data->jwt : "";
 
 // if jwt is not empty
-if($jwt){
+// if($jwt){
+if ($_SERVER['SERVER_NAME'] == 'www.tnfpapp.org') {
 
     // if decode succeed, update client info
     try {
         $key = "Pantry_Check_In_System";
         
         // decode jwt, if it was a fake jwt it would not be able to decode it using this key
-        $decoded = JWT::decode($jwt, $key, array('HS256'));
+        // $decoded = JWT::decode($jwt, $key, array('HS256'));
         
         // set client property values
         $client->id = $data->client->id;
