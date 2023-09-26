@@ -16,6 +16,7 @@ class VisitItems{
 	public $place_of_service;
 	public $methodOfPickup;
 	public $items;
+	public $date_of_visit;
     
 	// constructor
 	public function __construct($db){
@@ -33,20 +34,20 @@ class VisitItems{
         }
         
          // delete query for checked in items
-    	$query1 = "DELETE FROM ". $this->table_name . " WHERE c_id = :c_id AND place_of_service = :place_of_service AND quantity = ''";
+    	// $query1 = "DELETE FROM ". $this->table_name . " WHERE c_id = :c_id AND place_of_service = :place_of_service AND quantity = ''";
     
-    	// prepare the query
-    	$stmt1 = $this->conn->prepare($query1);
+    	// // prepare the query
+    	// $stmt1 = $this->conn->prepare($query1);
     	
-    	// sanitize
-    	$this->c_id=htmlspecialchars(strip_tags($this->c_id));
+    	// // sanitize
+    	// $this->c_id=htmlspecialchars(strip_tags($this->c_id));
 
-    	// bind the values
-    	$stmt1->bindParam(':c_id', $this->c_id);
-    	$stmt1->bindParam(':place_of_service', $this->place_of_service);
+    	// // bind the values
+    	// $stmt1->bindParam(':c_id', $this->c_id);
+    	// $stmt1->bindParam(':place_of_service', $this->place_of_service);
 
-     	// execute the query, also check if query was successful
-    	$result1 = $stmt1->execute();
+     	// // execute the query, also check if query was successful
+    	// $result1 = $stmt1->execute();
   
    	
     	// if items exists, update item, else insert
@@ -72,7 +73,8 @@ class VisitItems{
     	        
     	        // update
     	        // update query item
-            	$query3 = "UPDATE ". $this->table_name . " SET quantity = :quantity, notes = :notes WHERE c_id = :c_id AND place_of_service = :place_of_service AND item = :item";
+				// origDateFix this is the fix lol
+            	$query3 = "UPDATE ". $this->table_name . " SET quantity = :quantity, notes = :notes, timestamp = :date_of_visit WHERE c_id = :c_id AND place_of_service = :place_of_service AND item = :item";
             
             	// prepare the query
             	$stmt3 = $this->conn->prepare($query3);
@@ -86,6 +88,7 @@ class VisitItems{
             	$stmt3->bindParam(':item', $this->item);
             	$stmt3->bindParam(':quantity', $quantity);
             	$stmt3->bindParam(':notes', $this->notes);
+				$stmt3->bindParam(':date_of_visit', $this->date_of_visit); // origDateFix this is the fix lol
             	$stmt3->bindParam(':place_of_service', $this->place_of_service);
         
              	// execute the query, also check if query was successful
@@ -97,7 +100,8 @@ class VisitItems{
     	    }
     	    else {
     	     // insert query item
-            	$query = "INSERT INTO ". $this->table_name . " (c_id, item, quantity, notes, place_of_service) VALUES (:c_id, :item, :quantity, :notes, :place_of_service)";
+			 // origDateFix this is the fix lol
+            	$query = "INSERT INTO ". $this->table_name . " (c_id, item, quantity, notes, place_of_service, timestamp) VALUES (:c_id, :item, :quantity, :notes, :place_of_service, :timestamp)";
             
             	// prepare the query
             	$stmt = $this->conn->prepare($query);
@@ -111,6 +115,7 @@ class VisitItems{
             	$stmt->bindParam(':item', $this->item);
             	$stmt->bindParam(':quantity', $quantity);
             	$stmt->bindParam(':notes', $this->notes);
+				$stmt->bindParam(':timestamp', $this->date_of_visit); // origDateFix this is the fix lol
             	$stmt->bindParam(':place_of_service', $this->place_of_service);
         
              	// execute the query, also check if query was successful
@@ -168,9 +173,9 @@ class VisitItems{
             	    // insert items in items table
             	    foreach ($this->items as $item) {
             	        $query = "INSERT INTO visit_items
-            	        (c_id, item, place_of_service)
+            	        (c_id, item, place_of_service, timestamp)
                             VALUES 
-                        (:c_id, :item, :placeOfService)";
+                        (:c_id, :item, :placeOfService, :timestamp)";
                         
                         // prepare the query
             	        $stmt = $this->conn->prepare($query);
@@ -179,6 +184,7 @@ class VisitItems{
             	        $stmt->bindParam(':c_id', $this->c_id);
             	        $stmt->bindParam(':item', $item);
             	        $stmt->bindParam(':placeOfService', $this->place_of_service);
+						$stmt->bindParam(':timestamp', $this->date_of_visit); // origDateFix this is the fix lol
             	        
             	        // execute the query
             	        $stmt->execute();

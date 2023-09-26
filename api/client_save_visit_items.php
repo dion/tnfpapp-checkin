@@ -31,15 +31,13 @@ $data = json_decode(file_get_contents("php://input"));
 $jwt=isset($data->jwt) ? $data->jwt : "";
 
 // if jwt and id are not empty proceed
-// if($jwt && $data->visit->c_id){
-if ($_SERVER['SERVER_NAME'] == 'www.tnfpapp.org' && $data->visit->c_id) {
-
+if($jwt && $data->visit->c_id){
     // if decode succeed, save visit details
     try {
         $key = "Pantry_Check_In_System";
 
         // decode jwt, if it was a fake jwt it would not be able to decode it using this key
-        // $decoded = JWT::decode($jwt, $key, array('HS256'));
+        $decoded = JWT::decode($jwt, $key, array('HS256'));
         
         // set visit property values
         $visitItems->id = $data->visit->id;
@@ -48,7 +46,9 @@ if ($_SERVER['SERVER_NAME'] == 'www.tnfpapp.org' && $data->visit->c_id) {
         $visitItems->numOfItems = $data->visit->numOfItems;
         $visitItems->weight = $data->visit->weight;
         $visitItems->notes = $data->visit->notes;
+        $visitItems->date_of_visit = $data->visit->date_of_visit; // origDateFix this is the fix lol
         $visitItems->place_of_service = $data->visit->place_of_service;
+
 
         if($visitItems->saveVisitItem()){
             // set response code

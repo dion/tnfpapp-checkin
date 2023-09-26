@@ -69,9 +69,9 @@ class Client{
     	if(!$clientCheckedIn){
     	    // insert without the email
         	$query = "INSERT INTO " . $this->table_name . "
-        	        (c_id, fname, lname, status, familyNumber, placeOfService, methodOfPickup, active)
+        	        (c_id, fname, lname, status, familyNumber, placeOfService, methodOfPickup, active, checked_in)
                         VALUES 
-                    (:c_id, :fname, :lname, :status, :familyNumber, :placeOfService, :methodOfPickup, 1)";
+                    (:c_id, :fname, :lname, :status, :familyNumber, :placeOfService, :methodOfPickup, 1, :checked_in)";
         
         	// prepare the query
         	$stmt = $this->conn->prepare($query);
@@ -82,7 +82,7 @@ class Client{
         	$this->familyNumber=htmlspecialchars(strip_tags($this->familyNumber));
         	$this->placeOfService=htmlspecialchars(strip_tags($this->placeOfService));
         	$this->methodOfPickup=htmlspecialchars(strip_tags($this->methodOfPickup));
-
+			$timestamp = date("Y-m-d H:i:s");
 
         	// bind the values
         	$stmt->bindParam(':c_id', $client['id']);
@@ -92,16 +92,17 @@ class Client{
         	$stmt->bindParam(':familyNumber', $this->familyNumber);
         	$stmt->bindParam(':placeOfService', $this->placeOfService);
         	$stmt->bindParam(':methodOfPickup', $this->methodOfPickup);
-        
+			$stmt->bindParam(':checked_in', $timestamp);
+
         	// execute the query, also check if query was successful
         	if($stmt->execute()){
         	    
         	    // insert items in items table
         	    foreach ($this->items as $item) {
         	        $query = "INSERT INTO visit_items
-        	        (c_id, item, place_of_service)
+        	        (c_id, item, place_of_service, timestamp)
                         VALUES 
-                    (:c_id, :item, :placeOfService)";
+                    (:c_id, :item, :placeOfService, :timestamp)";
                     
                     // prepare the query
         	        $stmt = $this->conn->prepare($query);
@@ -110,7 +111,8 @@ class Client{
         	        $stmt->bindParam(':c_id', $client['id']);
         	        $stmt->bindParam(':item', $item);
         	        $stmt->bindParam(':placeOfService', $this->placeOfService);
-        	        
+					$stmt->bindParam(':timestamp', $timestamp);
+
         	        // execute the query
         	        $stmt->execute();
                 }
@@ -119,46 +121,14 @@ class Client{
         	}
         	
         	return false;
-    	}
-    	else {
-    	    // client has been checked in before
-    	    // Find date range needed for sql
-    	    $today = date("w", strtotime('today'));
-
-            $days = 0;
-            switch($today){
-                case 1:
-                    $days = 0;
-                break;
-                case 2:
-                    $days = -1;
-                break;
-                case 3:
-                    $days = -2;
-                break;
-                case 4:
-                    $days = -3;
-                break;
-                case 5:
-                    $days = -4;
-                break;
-                case 6:
-                    $days = -5;
-                break;
-            }
-            
-            $minDate = date('Y-m-d 01:00:00', strtotime("$days days"));
-            $maxDate = date("Y-m-d H:i:s");
-            
+    	} else {
     	    // check if client is in since Monday
-    	    $selectQueryLast7days = "SELECT * FROM `clients_checkin` WHERE timestamp >= :minDate AND timestamp <= :maxDate AND c_id = :c_id AND placeOfService = :placeOfService";
+    	    $selectQueryLast7days = "SELECT * FROM `clients_checkin` WHERE YEARWEEK(`checked_in`, 1) = YEARWEEK(CURDATE(), 1) AND c_id = :c_id AND placeOfService = :placeOfService";
 
             // prepare the query
         	$selectStmtLast7days = $this->conn->prepare($selectQueryLast7days);
         	
         	// bind the value
-        	$selectStmtLast7days->bindParam(':minDate', $minDate);
-        	$selectStmtLast7days->bindParam(':maxDate', $maxDate);
         	$selectStmtLast7days->bindParam(':c_id', $client['id']);
         	$selectStmtLast7days->bindParam(':placeOfService', $this->placeOfService);
         	
@@ -176,9 +146,9 @@ class Client{
         	else {
         	    // insert without the email
             	$query = "INSERT INTO " . $this->table_name . "
-            	        (c_id, fname, lname, status, familyNumber, placeOfService, active)
+            	        (c_id, fname, lname, status, familyNumber, placeOfService, active, checked_in)
                             VALUES 
-                        (:c_id, :fname, :lname, :status, :familyNumber, :placeOfService, 1)";
+                        (:c_id, :fname, :lname, :status, :familyNumber, :placeOfService, 1, :checked_in)";
             
             	// prepare the query
             	$stmt = $this->conn->prepare($query);
@@ -188,7 +158,8 @@ class Client{
             	$this->lname=htmlspecialchars(strip_tags($this->lname));
             	$this->familyNumber=htmlspecialchars(strip_tags($this->familyNumber));
             	$this->placeOfService=htmlspecialchars(strip_tags($this->placeOfService));
-    
+    			$timestamp = date("Y-m-d H:i:s");
+
             	// bind the values
             	$stmt->bindParam(':c_id', $client['id']);
             	$stmt->bindParam(':fname', $this->fname);
@@ -196,16 +167,18 @@ class Client{
             	$stmt->bindParam(':status', $this->status);
             	$stmt->bindParam(':familyNumber', $this->familyNumber);
             	$stmt->bindParam(':placeOfService', $this->placeOfService);
-            
+            	$stmt->bindParam(':checked_in', $timestamp);
+
             	// execute the query, also check if query was successful
             	if($stmt->execute()){
         	        
             	    // insert items in items table
             	    foreach ($this->items as $item) {
+						// add date here
             	        $query = "INSERT INTO visit_items
-            	        (c_id, item, place_of_service)
+            	        (c_id, item, place_of_service, timestamp)
                             VALUES 
-                        (:c_id, :item, :placeOfService)";
+                        (:c_id, :item, :placeOfService, :timestamp)";
                         
                         // prepare the query
             	        $stmt = $this->conn->prepare($query);
@@ -214,6 +187,7 @@ class Client{
             	        $stmt->bindParam(':c_id', $client['id']);
             	        $stmt->bindParam(':item', $item);
             	        $stmt->bindParam(':placeOfService', $this->placeOfService);
+						$stmt->bindParam(':timestamp', $timestamp);
             	        
             	        // execute the query
             	        $stmt->execute();
@@ -278,8 +252,8 @@ class Client{
     	    $clients = $stmt->fetchAll();
     	    
     	    for($i = 0; $i < count($clients); $i++){
-        	        $query = "SELECT visit_items.* FROM visit_items INNER JOIN items ON visit_items.item = items.name AND items.place_of_service= :placeOfService WHERE c_id = :c_id";
-
+					// $query = "SELECT visit_items.* FROM visit_items INNER JOIN items ON visit_items.item = items.name AND items.place_of_service= :placeOfService WHERE c_id = :c_id and visit_items.timestamp <= ( NOW() - INTERVAL 7 DAY ) and status = 'serving' or status = ''  OR c_id = :c_id and visit_items.timestamp <= NOW() and status = 'serving' or status = ''";
+					$query = "SELECT visit_items.* FROM visit_items INNER JOIN items ON visit_items.item = items.name AND items.place_of_service= :placeOfService WHERE c_id = :c_id and active = 1"; // new fix
                     // prepare the query
         	        $stmt = $this->conn->prepare($query);
         	        
@@ -325,69 +299,76 @@ class Client{
     	
     	if($result){
     	    if($this->status === "checkout"){
-    	     // select all items from visit_items for that user to be inserted into visits for main app only if its moving from serving to checkout
-    	   $query2 = "SELECT * FROM visit_items WHERE timestamp BETWEEN :startDate AND :endDate AND c_id = :c_id AND active = 1";
-    
-        	// prepare the query
-        	$stmt2 = $this->conn->prepare($query2);
-        	
-        	// bind the value
-        	$stmt2->bindParam(':startDate', date("Y-m-d 1:00:00"));
-        	$stmt2->bindParam(':endDate', date("Y-m-d H:i:s"));
-        	$stmt2->bindParam(':c_id', $this->c_id);
-            
-         	// execute the query, also check if query was successful
-        	$result2 = $stmt2->execute();
-        	
-        	if($result2){
-        	    $stmt2->setFetchMode(PDO::FETCH_ASSOC);
-    	        $itemsArray = $stmt2->fetchAll();
-    	        
-    	        $items = [];
-    	        $quantity = 0;
-    	        
-    	        foreach($itemsArray as $key => $item){
-    	            array_push($items, $item['item']);
-    	            $quantity = $quantity + $item['quantity'];
-    	        }
-    	        
-        	    // insert into visits table also so that the visit appears in main app
-        	    $query3 = "INSERT INTO `visits` (`id`, `place_of_service`, `date_of_visit`, `program`, `numBags`, `weight`, `numOfItems`, `client_id`) VALUES (NULL, :placeOfService, :dateOfVisit, :program, 0, '', :numOfItems, :c_id)";
-        
-					  // prepare the query
-        	        $stmt3 = $this->conn->prepare($query3);
-        	        
-        	        // bind the values
-        	        $stmt3->bindParam(':placeOfService', $this->placeOfService);
-        	        $stmt3->bindParam(':dateOfVisit', date("Y-m-d"));
-        	        $stmt3->bindParam(':program', implode(", ", $items));
-        	        $stmt3->bindParam(':numOfItems', $quantity);
-        	        $stmt3->bindParam(':c_id', $this->c_id);
-        	        
-        	        // execute the query
-        	        $result3 = $stmt3->execute();
-        	        
-        	        if($result3){
-        	              $query4 = "UPDATE visit_items SET status = :status WHERE c_id = :c_id AND active = 1";
-    
-                        	// prepare the query
-                        	$stmt4 = $this->conn->prepare($query4);
-                        	
-                        	// bind the value
-                        	$stmt4->bindParam(':status', $this->status);
-                        	$stmt4->bindParam(':c_id', $this->c_id);
-                            
-                         	// execute the query, also check if query was successful
-                        	$result4 = $stmt4->execute();
-                        	
-                         	if($result4){
-                         	    return true;
-                         	}
-        	        }
-        	}   
+				// select all items from visit_items for that user to be inserted into visits for main app only if its moving from serving to checkout
+				// $query2 = "SELECT * FROM visit_items WHERE timestamp BETWEEN :startDate AND :endDate AND c_id = :c_id AND active = 1";
+				$query2 = "SELECT * FROM visit_items WHERE c_id = :c_id AND active = 1"; // new fix
+		
+				// prepare the query
+				$stmt2 = $this->conn->prepare($query2);
+				
+				// bind the value
+				// $stmt2->bindParam(':startDate', date("Y-m-d 0:00:00")); // origDateFix? // new fix
+				// $stmt2->bindParam(':endDate', date("Y-m-d H:i:s")); // new fix
+				$stmt2->bindParam(':c_id', $this->c_id);
+				
+				// execute the query, also check if query was successful
+				$result2 = $stmt2->execute();
+				
+				if($result2){
+					$stmt2->setFetchMode(PDO::FETCH_ASSOC);
+					$itemsArray = $stmt2->fetchAll();
+					
+					$items = [];
+					$quantity = 0;
+					
+					foreach($itemsArray as $key => $item){
+						array_push($items, $item['item']);
+						$quantity = $quantity + $item['quantity'];
+						$lastTimeStamp = $item['timestamp']; // origDateFix this is the fix lol
+					}
+					
+					// insert into visits table also so that the visit appears in main app
+					$query3 = "INSERT INTO `visits` (`id`, `place_of_service`, `date_of_visit`, `program`, `numBags`, `weight`, `numOfItems`, `client_id`) VALUES (NULL, :placeOfService, :dateOfVisit, :program, 0, '', :numOfItems, :c_id)";
+			
+					// prepare the query
+					$stmt3 = $this->conn->prepare($query3);
+					
+					// bind the values
+					$stmt3->bindParam(':placeOfService', $this->placeOfService);
+					// $stmt3->bindParam(':dateOfVisit', date("Y-m-d")); // origDateFix remove this line 
+					$stmt3->bindParam(':dateOfVisit', $lastTimeStamp); // origDateFix this is the fix
+					$stmt3->bindParam(':program', implode(", ", $items));
+					$stmt3->bindParam(':numOfItems', $quantity);
+					$stmt3->bindParam(':c_id', $this->c_id);
+					
+					// execute the query
+					$result3 = $stmt3->execute();
+					
+					if($result3){
+						//$query4 = "UPDATE visit_items SET status = :status WHERE c_id = :c_id AND active = 1 and timestamp <= ( NOW() - INTERVAL 7 DAY ) and status = 'serving' or status = ''  OR c_id = :c_id and visit_items.timestamp <= NOW() and status = 'serving' or status = ''";
+						// $query4 = "UPDATE visit_items SET status = :status WHERE c_id = :c_id AND active = 1 and timestamp <= ( NOW() - INTERVAL 7 DAY ) OR c_id = :c_id and visit_items.timestamp <= NOW() and active = 1";
+						$query4 = "UPDATE visit_items SET status = :status WHERE c_id = :c_id AND active = 1"; // new fix
+
+							// prepare the query
+							$stmt4 = $this->conn->prepare($query4);
+							
+							// bind the value
+							$stmt4->bindParam(':status', $this->status);
+							$stmt4->bindParam(':c_id', $this->c_id);
+							
+							// execute the query, also check if query was successful
+							$result4 = $stmt4->execute();
+							
+							if($result4){
+								return true;
+							}
+					}
+				}   
     	    }
     	    else {
-                $query5 = "UPDATE visit_items SET status = :status WHERE c_id = :c_id AND active = 1";
+                // $query5 = "UPDATE visit_items SET status = :status WHERE c_id = :c_id AND active = 1 and timestamp <= ( NOW() - INTERVAL 7 DAY ) and status = 'serving' or status = '' OR c_id = :c_id and visit_items.timestamp <= NOW() and status = 'serving' or status = ''";
+				// $query5 = "UPDATE visit_items SET status = :status WHERE c_id = :c_id AND active = 1 and timestamp <= ( NOW() - INTERVAL 7 DAY ) OR c_id = :c_id and visit_items.timestamp <= NOW() and active = 1";
+				$query5 = "UPDATE visit_items SET status = :status WHERE c_id = :c_id AND active = 1"; // new fix
     
             	// prepare the query
             	$stmt5 = $this->conn->prepare($query5);
@@ -411,31 +392,27 @@ class Client{
     // clear checked out clients
     function clearCheckout(){
     	// delete query client from clients_checkin
+		// this wasn't working because status in clients_checkin and visit_items was still 'serving'
     	$query = "UPDATE " . $this->table_name . " SET active = 0 WHERE status = 'checkout' AND placeOfService = :placeOfService AND active = 1";
-    
+		
     	// prepare the query
     	$stmt = $this->conn->prepare($query);
-    	
+
     	// bind the value
     	$stmt->bindParam(':placeOfService', $this->placeOfService);
         
      	// execute the query, also check if query was successful
     	$result = $stmt->execute();
+
+		// check that current clients_checkedin users visit_items aren't in serving state
+		
+		$query2 = "UPDATE visit_items SET active = 0 WHERE status = 'checkout' AND active = 1";
+		$stmt2 = $this->conn->prepare($query2);
+		$result2 = $stmt2->execute();
     	
     	if($result){
-    	    // delete all items for that place
-    	    $query = "UPDATE visit_items SET active = 0 WHERE status = 'checkout' AND active = 1";
-    
-        	// prepare the query
-        	$stmt = $this->conn->prepare($query);
-        	
-        	// bind the value
-        	$stmt->bindParam(':c_id', $this->c_id);
-            
-         	// execute the query, also check if query was successful
-        	$result = $stmt->execute();
-    	
     	    // select the remaining clients
+			// this is ok
         	$query = "SELECT * FROM " . $this->table_name . " WHERE placeOfService = :placeOfService AND active = 1";
         
         	// prepare the query
