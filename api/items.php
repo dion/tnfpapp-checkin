@@ -32,13 +32,14 @@ $jwt=isset($data->jwt) ? $data->jwt : "";
 
 // if jwt is not empty proceed
 // if($jwt && $data->place_of_service){
-if ($_SERVER['SERVER_NAME'] == 'www.tnfpapp.org' && $data->place_of_service) {
+if($jwt){
+// if ($_SERVER['SERVER_NAME'] == 'www.tnfpapp.org' && $data->place_of_service) {
     // if decode succeed, save visit details
     try {
         $key = "Pantry_Check_In_System";
 
         // decode jwt, if it was a fake jwt it would not be able to decode it using this key
-        // $decoded = JWT::decode($jwt, $key, array('HS256'));
+        $decoded = JWT::decode($jwt, $key, array('HS256'));
         
         $item->place_of_service = $data->place_of_service;
 
@@ -76,6 +77,7 @@ if ($_SERVER['SERVER_NAME'] == 'www.tnfpapp.org' && $data->place_of_service) {
 else {
     // show error message
     echo json_encode(array(
+        "data" => $data,
         "error" => "Missing jwt token or place of service"
     ));
 }
