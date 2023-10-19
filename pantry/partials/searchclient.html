@@ -1,0 +1,198 @@
+<div class="span12" ng-controller="searchController">
+<div class="widget widget-nopad">
+	<div class="widget">
+		<div class="widget-header"> <i class="icon-search"></i>
+		  <h3>Client Search</h3>
+		</div>
+		
+		<!-- /widget-header -->
+		<div class="widget-content">
+			<form id="edit-profile" class="form-horizontal">
+				<fieldset>	
+					
+					<div class="control-group">
+						<table class="search">
+							<tr>								
+								<td>Client ID</td>
+								<td>First Name</td>
+								<td>Last Name</td>
+								<td>Address</td>
+								<td>Phone Number</td>
+								<td>Email</td>
+								<td># In House</td>
+								<td>Comments</td>
+							</tr>
+							<tr>
+								<td><select ng-model='form.idType' ng-options='option.value as option.name for option in typeOptions'></select></td>
+								<td><select ng-model='form.fnameType' ng-options='option.value as option.name for option in typeOptions'></select>								
+								<td><select ng-model='form.lnameType' ng-options='option.value as option.name for option in typeOptions'></select>								
+								<td><select ng-model='form.addressType' ng-options='option.value as option.name for option in typeOptions'></select>								
+								<td><select ng-model='form.phoneType' ng-options='option.value as option.name for option in typeOptions'></select>								
+								<td><select ng-model='form.emailType' ng-options='option.value as option.name for option in typeOptions'></select>	
+								<td><select ng-model='form.numInHouseType' ng-options='option.value as option.name for option in typeOptions'></select>	
+								<td><select ng-model='form.commentsType' ng-options='option.value as option.name for option in typeOptions'></select>																								
+							</tr>
+							<tr>
+								<td><input type="text" class="span2" id="clientID" ng-model="clientID"></td>
+								<td><input type="text" class="span2" id="firstname" ng-model="fname"></td>
+								<td><input type="text" class="span2" id="lname" ng-model="lname"></td>
+								<td><input type="text" class="span2" id="address" ng-model="address"></td>
+								<td><input type="text" class="span2" id="phone" ng-model="phone"></td>
+								<td><input type="text" class="span2" id="email" ng-model="email"></td>
+								<td><input type="text" class="span2" id="numInHouse" ng-model="numInHouse"></td>
+								<td><input type="text" class="span2" id="comments" ng-model="comments"></td>
+							</tr>
+						</table>										
+					</div> <!-- /control-group -->
+						
+					<div class="form-actions alignRight">
+						<button type="submit" class="btn btn-primary" ng-click="search()">Search</button> 
+					</div> <!-- /form-actions -->
+				</fieldset>
+			</form>
+		</div>
+		<!-- /widget-content --> 
+	</div>
+</div>	
+	  <!--------------------------
+<script type="text/javascript">
+        $(document).ready(function () {
+            window.asd = $('.SlectBox').SumoSelect({ csvDispCount: 3 });
+        
+			
+        });
+    </script>
+	  ------>
+<!--
+	<select id="testing" multiple="multiple" placeholder="Select columns to hide" class="SlectBox">
+		<option id="clientIDoption" value="clientID">Client ID</option>
+		<option value="fname">First Name</option>
+		<option value="lname">Last Name</option>
+		<option id="addressOption" value="address">Address</option>
+		<option value="phone">Phone</option>
+	</select>
+-->
+
+
+<script>
+/*$(function() {
+	//$('select.SlectBox')[0].sumo.selectItem(2);
+	
+
+	$('#testing').on('click', function() { console.log('clicked');
+var sel = $('#mySelectBox option:selected');
+		$('#lnameCol').toggle();
+		console.log(sel);
+	});	
+});	
+
+
+
+$(function() {
+	//$('select.SlectBox')[0].sumo.selectItem(2);
+
+	$('select.SlectBox').on('change', function() {
+
+		$.each( $("select.SlectBox")[0].sumo.select.context.selectedOptions, function( key, value ) {
+		
+			//console.log($("select.SlectBox")[0].sumo.select.context.selectedOptions[key].text);
+
+		
+			if($("select.SlectBox")[0].sumo.select.context.selectedOptions[key].text == 'Last Name'){ console.log('hide');
+				$('#lnameCol').hide();
+			} else { console.log('show');
+				$('#lnameCol').show();
+			}
+		});
+		
+	});	
+});	
+	*/
+/*	
+function clicked(value){
+	$.each( $("select.SlectBox")[0].sumo.select.context.selectedOptions, function( key, value ) {
+	
+		//console.log($("select.SlectBox")[0].sumo.select.context.selectedOptions[key].text);
+	
+		if($("select.SlectBox")[0].sumo.select.context.selectedOptions[key].text == 'Last Name'){ console.log('show');
+			$('#lnameCol').show();
+		} else { console.log('hide');
+			$('#lnameCol').hide();
+		}
+	});
+	
+	if($("select.SlectBox")[0].sumo.select.context.selectedOptions[0]){
+		alert($("select.SlectBox")[0].sumo.select.context.selectedOptions[0].text);
+	}
+	
+	
+	$("select.SlectBox").each(function(){
+		val.push(this.value);
+	});
+	*/
+		  
+	/*
+    $("#testing option").each(function(){
+    	console.log($(this).val());
+	});
+	
+}*/
+</script>
+	  <!-------------------------------->
+
+<div class="widget widget-table action-table">
+	<div class="widget-header"> <i class="icon-th-list"></i>
+	  <h3>Clients</h3>
+	  
+	</div>
+	<!-- /widget-header -->
+	<div class="widget-content">
+	  <table class="table table-striped table-bordered">
+		<thead>
+		  <tr>
+			<th id="id" class="sort" ng-click="changeSorting('id')">Client ID#</th>
+			<th id="fnameCol" class="sort" ng-click="changeSorting('fname')">First Name</th>
+			<th id="lnameCol" class="sort" ng-click="changeSorting('lname')">Last Name</th>
+			<th id="address" class="sort" ng-click="changeSorting('address')">Address</th>
+			<th id="phone" class="sort" ng-click="changeSorting('phone')">Phone</th>
+			<th id="inHouse" class="sort" ng-click="changeSorting('inhouse')"># in House</th>
+			<th id="email" class="sort" ng-click="changeSorting('email')">Email</th>
+			<th class="td-actions"> </th>
+		  </tr>
+		</thead>
+		<tbody>
+          <tr ng-repeat="client in clients|orderBy:sort.column:sort.descending">
+			<td>{{ client.id }}</td>
+			<td>{{ client.fname }}</td>
+			<td>{{ client.lname }}</td>
+			<td>{{ client.address }}</td>
+			<td>{{ client.phone }}</td>
+			<td>{{ client.inhouse }}</td>
+			<td>{{ client.email }}</td>
+
+			<td class="td-actions">
+				<a ng-href="#/edit/{{client.id}}" class="btn btn-small btn-success"><i class="btn-icon-only icon-ok"> </i></a>
+				<a href="" class="btn btn-danger btn-small" ng-click="deleteModal(client.id)" ng-show="userRole('admin')"><i class="btn-icon-only icon-remove"> </i></a>
+			</td>
+		  </tr>	
+		  <tr ng-show="!clients.length"><td colspan="8" class="centerText">No records found</td></tr>
+		</tbody>
+	  </table>
+	</div>
+	<!-- /widget-content --> 	
+</div>	
+</div>	
+<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Client delete</h3>
+  </div>
+  <div class="modal-body">
+    <p>The client will be permanently deleted and cannot be recovered. Are you sure?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn cancel" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    <button class="btn btn-primary delete">Delete</button>
+  </div>
+</div>
+<div class="ui-widget-overlay ui-front" style="z-index: 101;display:none;"></div>

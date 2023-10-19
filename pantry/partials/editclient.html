@@ -1,0 +1,343 @@
+<div class="alertt alertt-danger date" style="display:none;">
+      <strong>Warning!</strong> This date already exists.
+</div>
+<div class="alertt alertt-danger fields" style="display:none;">
+      <strong>Warning!</strong> Not all fields for the visit have been completed.
+</div>
+<div class="span6">
+<div class="widget widget-nopad" ng-controller="editController">
+	<div class="widget">
+		<div class="widget-header"> <i class="icon-edit"></i>
+		  <h3>Edit Record - {{ client[0].id }}</h3>
+		</div>
+			
+		<!-- /widget-header -->
+		<div class="widget-content">
+			 <form id="edit-profile" class="form-horizontal">
+				<fieldset>
+					<div class="form-actions" style="text-align:right;">
+						<button type="submit" class="btn btn-primary" ng-click="update()">Save</button> 
+					</div> <!-- /form-actions -->
+					
+					<br/>
+					
+					<div class="control-group">											
+						<label class="control-label" for="firstname">First Name</label>
+						<div class="controls">
+							<input type="text" class="span4" id="firstname" ng-model="client[0].fname"  data-validation="custom" data-validation-regexp="[a-zA-Z]" data-validation-error-msg="The first name should contain only letters">
+						</div> <!-- /controls -->					
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="lastname">Last Name</label>
+						<div class="controls">
+							<input type="text" class="span4" id="lastname" ng-model="client[0].lname" data-validation="custom" data-validation-regexp="[a-zA-Z]" data-validation-error-msg="The last name should contain only letters">
+						</div> <!-- /controls -->
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="address">Address</label>
+						<div class="controls">
+							<input type="text" class="span4" id="address" ng-model="client[0].address">
+						</div> <!-- /controls -->
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="city">City</label>
+						<div class="controls">
+							<input type="text" class="span4" id="city" ng-model="client[0].city">
+						</div> <!-- /controls -->	
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="state">State</label>
+						<div class="controls">
+							<select id="state" class="span4" ng-model="client[0].state">
+								<option value="AZ">Arizona</option>
+							</select>
+						</div> <!-- /controls -->		
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="postalCode">Postal Code</label>
+						<div class="controls">
+							<input type="text" class="span4" id="postalCode" ng-model="client[0].postalCode">
+						</div> <!-- /controls -->		
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="phone">Phone</label>
+						<div class="controls">
+							<input type="text" class="span4" id="phone" ng-model="client[0].phone">
+						</div> <!-- /controls -->		
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="email">Email</label>
+						<div class="controls">
+							<input type="text" class="span4" id="email" ng-model="client[0].email">
+						</div> <!-- /controls -->		
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="employed">Head of household currently employed?</label>
+						<div class="controls">
+							<select id="employed" class="span4" ng-model="client[0].employed">
+								<option value="yes">Yes</option>
+								<option value="no">No</option>
+							</select>
+						</div> <!-- /controls -->	
+					</div> <!-- /control-group -->
+					
+					<div class="control-group relative" id="lastDayWorkedDiv">											
+						<label class="control-label" for="lastDateWorked">Last date worked</label>
+						<div class="controls">
+							<input type="text" maxlength="0" class="span4" id="lastDateWorked" ng-model="client[0].lastDateWorked">
+						</div> <!-- /controls -->		
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="annualIncome">Annual Income</label>
+						<div class="controls">
+							<input type="text" class="span4" id="annualIncome" ng-model="client[0].annualIncome">
+						</div> <!-- /controls -->
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="incomeUpdated">Income Updated</label>
+						<div class="controls">
+							<input type="text" class="span4" id="incomeUpdated" ng-model="client[0].incomeUpdated" maxlength="0">
+						</div> <!-- /controls -->
+					</div> <!-- /control-group -->	
+					
+					<div class="control-group">											
+						<label class="control-label" for="inHouse">How many in house</label>
+						<div class="controls">
+							<select id="inHouse" class="span4" ng-model="client[0].inHouse">	
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+                                <option value="6">6</option>
+								<option value="7">7</option>
+								<option value="8">8</option>
+								<option value="9">9</option>
+								<option value="10">10+</option>
+							</select>
+						</div> <!-- /controls -->	
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="howManyMales">How many males</label>
+							<div class="controls">
+								<select id="howManyMales" class="span4" ng-model="client[0].howManyMales">
+									<option value="0">0</option>
+									<option value="1">1</option>
+									<option value="2">2</option>
+									<option value="3">3</option>
+									<option value="4">4</option>
+									<option value="5">5</option>
+									<option value="6">6</option>
+									<option value="7">7</option>
+									<option value="8">8</option>
+									<option value="9">9</option>
+								</select>
+							</div> <!-- /controls -->	
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="howManyFemales">How many females</label>
+						<div class="controls">
+							<select id="howManyFemales" class="span4" ng-model="client[0].howManyFemales">
+								<option value="0">0</option>
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+								<option value="6">6</option>
+								<option value="7">7</option>
+								<option value="8">8</option>
+								<option value="9">9</option>
+							</select>
+						</div> <!-- /controls -->
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="ageGroups">Age groups (for multiple hold ctrl)</label>
+						<div class="controls">
+							<select id="ageGroups" class="span4" ng-model="client[0].ageGroups" multiple>
+								<option value="1-5">1 - 5</option>
+								<option value="6-11">6 - 11</option>
+								<option value="12-18">12 - 18</option>
+								<option value="19-29">19 - 29</option>
+                                <option value="30-49">30 - 49</option>
+								<option value="50-69">50 - 69</option>
+								<option value="70-100">70 - 100+</option>
+							</select>
+						</div> <!-- /controls -->						
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="comments">Client notes</label>
+						<div class="controls">
+							<textarea rows="2" class="span4" id="comments" ng-model="client[0].comments"></textarea>
+						</div> <!-- /controls -->									
+					</div> <!-- /control-group -->
+					
+					<br />
+					
+				</fieldset>
+			</form>
+		</div>
+		<!-- /widget-content --> 
+	</div>
+</div>
+</div>
+<div class="span6" style="width:750px;">
+<div class="widget widget-nopad" ng-controller="editController">
+	
+	<div class="widget">
+		<div class="widget-header"> <i class="icon-plus-sign"></i>
+		  <h3>Add New Visit</h3>
+		</div>
+			
+		<!-- /widget-header -->
+		<div class="widget-content">
+			<form id="edit-profile" class="form-horizontal">
+				<fieldset>		
+					<br/>
+					
+					<div class="control-group relative">											
+						<label class="control-label" for="placeOfService">Place of Service</label>
+						<div class="controls">
+							<select ng-change="changeItems();" ng-model='form.placeOfService' ng-options='option.value as option.name for option in placeOfServiceOptions'></select>
+
+						</div> <!-- /controls -->		
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="dateOfVisit">Date of Visit</label>
+						<div class="controls">
+							<input type="text" maxlength="0" class="span4" id="dateOfVisit" ng-model="dateOfVisit" data-validation="date">
+						</div> <!-- /controls -->
+					</div> <!-- /control-group -->
+					
+					<div class="control-group relative">											
+						<label class="control-label" for="program">Item</label>
+						<div class="controls">
+							<select ng-change="showType();" id="program" class="span4" ng-model="program" ng-options='option.name for option in programOptions'></select>
+						</div> <!-- /controls -->		
+					</div> <!-- /control-group -->
+					
+					<div class="control-group relative" ng-show="itemType('Weight')">											
+						<label class="control-label" for="weight">Weight (lbs)</label>
+						<div class="controls">
+							<input type="text" placeholder="pounds" class="span4" id="weight" ng-model="weight">
+						</div> <!-- /controls -->		
+					</div> <!-- /control-group -->
+					
+					<div class="control-group relative" ng-show="itemType('Number')">										
+						<label class="control-label" for="numOfItems">Number of items</label>
+						<div class="controls">
+							<input type="text" class="span4" id="numOfItems" ng-model="numOfItems">
+						</div> <!-- /controls -->
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="volunteer">Volunteer</label>
+						<div class="controls">
+							<select id="volunteer" class="span4" ng-model="volunteer" ng-options="v.volunteer for v in volunteers track by v.volunteer" data-validation="required" data-validation-error-msg="You did not pick a volunteer"><option></option></select>
+						</div> <!-- /controls -->
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="visitNotes">Notes</label>
+						<div class="controls">
+							<textarea rows="2" class="span4" id="visitNotes" ng-model="visitNotes"></textarea>
+						</div> <!-- /controls -->									
+					</div> <!-- /control-group -->
+					
+					<br />
+					
+					<div class="form-actions">
+						<button type="button" class="btn btn-primary" ng-click="addVisit()" id="button">Save</button> 
+					</div> <!-- /form-actions -->
+				</fieldset>
+			</form>
+		</div>
+		<!-- /widget-content --> 
+	</div>
+	
+	<div class="widget widget-table action-table">
+		<div class="widget-header"> <i class="icon-th-list"></i>
+		  <h3>Client Visits</h3>
+		</div>
+		<!-- /widget-header -->
+		<div class="widget-content">
+		  <table class="table table-striped table-bordered">
+			<thead>
+			  <tr>
+				<th>Place of service</th>
+				<th class="sort" ng-click="changeSorting('dateOfVisit')">Date of visit</th>
+				<th>Program</th>
+				<th>Volunteer</th>
+				<th>Lbs/#Items</th>
+				<th>Notes</th>
+				<th class="td-actions"> </th>
+			  </tr>
+			</thead>
+			<tbody>
+			   <tr ng-repeat="visit in visits|orderBy:sort.column:sort.descending" ng-show="client[0].dateOfVisit">
+			    <td>{{ visit.place_of_service }}</td>
+				<td>{{ visit.dateOfVisit }}</td>
+				<td>{{ visit.program }}</td>
+				<td>{{ visit.volunteer }}</td>
+				<td>
+					<span ng-if="visit.weight">{{visit.weight}}</span>
+					<span ng-if="!visit.weight">{{visit.numOfItems}}<span>
+				</td>
+				<td>{{ visit.visitNotes }}</td>
+				<td class="td-actions"><a href="" class="btn btn-danger btn-small" ng-click="deleteVisit(visit.id)"><i class="btn-icon-only icon-remove"> </i></a></td>
+			  </tr>	
+			  <tr ng-show="!client[0].dateOfVisit"><td colspan="7" class="centerText">No records found</td></tr>
+			</tbody>
+		  </table>
+		</div>
+		<!-- /widget-content --> 
+	</div>	
+</div>
+</div>
+<script>
+  $(function() {
+    $( "#dateOfVisit" ).datepicker({
+	  autoOpen: false,
+      changeMonth: true,
+      changeYear: true,
+	  dateFormat: 'yy-mm-dd'
+    });
+	$( "#from" ).datepicker({
+	  autoOpen: false,
+      changeMonth: true,
+      changeYear: true,
+	  dateFormat: 'yy-mm-dd'
+    });
+	$( "#to" ).datepicker({
+	  autoOpen: false,
+      changeMonth: true,
+      changeYear: true,
+	  dateFormat: 'yy-mm-dd'
+    });
+	$( "#lastDateWorked" ).datepicker({
+      changeMonth: true,
+      changeYear: true,
+	  dateFormat: 'yy-mm-dd'
+    });
+	$( "#incomeUpdated" ).datepicker({
+      changeMonth: true,
+      changeYear: true,
+	  dateFormat: "yy-mm-dd"
+    });
+  });
+</script>

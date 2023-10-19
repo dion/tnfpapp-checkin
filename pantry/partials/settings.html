@@ -1,0 +1,82 @@
+<div class="span12" ng-controller="setCtrl">
+<div class="widget widget-table action-table">
+	<div class="widget-header"> <i class="icon-plus-sign"></i>
+	  <h3>Add Item</h3>
+	</div>
+	<!-- /widget-header -->
+	<div class="widget-content">
+		<form id="edit-profile" class="form-horizontal">
+				<fieldset>
+					
+					<br/>		
+					
+					<div class="control-group relative" style="float:left;">											
+						<label class="control-label" for="name">Item</label>
+						<div class="controls">
+							<input type="text" class="span4" id="name" ng-model="name">
+						</div> <!-- /controls -->	
+
+						<label class="control-label" for="sortOrder" style="margin-top:5px;">Sort Order</label>
+						<div class="controls" style="margin-top:5px;">
+							<input type="text" class="span1" id="sortOrder" ng-model="sortOrder">
+						</div> <!-- /controls -->						
+					</div> <!-- /control-group -->
+					
+					<div class="control-group relative" style="float:left;">											
+						<label class="control-label" for="itemType">Type</label>
+						<div class="controls">
+							<select ng-model='form.itemType' ng-options='option.value as option.name for option in itemTypeOptions'></select>
+						</div> <!-- /controls -->	
+						
+						<label class="control-label" for="pof" style="margin-top:5px;">Place of Service</label>
+						<div class="controls" style="margin-top:5px;">
+							<select ng-model='form.pof' ng-options='option.value as option.name for option in placeOfServiceOptions'></select>
+						</div> <!-- /controls -->
+					</div> <!-- /control-group -->
+					
+					<br/><br/>
+					
+					<br/>
+					<div class="form-actions" style="text-align:right;">
+						<button type="submit" class="btn btn-primary" ng-click="insert()">Save</button> 
+					</div> <!-- /form-actions -->				
+				</fieldset>
+			</form>
+	</div>
+	<!-- /widget-content --> 	
+</div>	
+
+<div class="widget widget-table action-table">
+	<div class="widget-header"> <i class="icon-th-list"></i>
+	  <h3>Items</h3>
+	  
+	</div>
+	<!-- /widget-header -->
+	<div class="widget-content">
+		<form id="edit-profile" class="form-horizontal">
+		  <table class="table table-striped table-bordered">
+			<thead>
+			  <tr>
+				<th>Order</th>
+				<th>Name</th>
+				<th>Type</th>
+				<th>Place of Service</th>
+                <th class="td-actions"> </th>
+			  </tr>
+			</thead>
+			<tbody>
+			  <tr ng-repeat="name in items" ng-show="items.length">
+				<td>{{ name.sortOrder }}</td>
+				<td>{{ name.name }}</td>
+				<td>{{ name.itemType }}</td>
+				<td>{{ name.pof }}</td>
+				<td class="td-actions"><a href="" class="btn btn-danger btn-small" ng-click="deleteItem(name.id)"><i class="btn-icon-only icon-remove"> </i></a></td>
+			  </tr>	
+			  <tr ng-show="!items.length"><td colspan="7" class="centerText">No records found</td></tr>
+			</tbody>
+		  </table>
+	  </form>
+	</div>
+	<!-- /widget-content --> 	
+</div>	
+</div>

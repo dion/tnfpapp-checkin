@@ -1,0 +1,103 @@
+<div class="span6" ng-controller="reportsController">
+<div class="widget widget-nopad">
+	<div class="widget">
+		
+		<div class="widget-header"> <i class="icon-file"></i>
+		  <h3>Export client visits by date range</h3>
+		</div>
+		<div class="widget-content">
+			<form method="post" id="edit-profile" class="form-horizontal" action="php/export.php" target="_blank">
+				<fieldset>		
+					<br/>
+					
+					<div class="control-group relative">											
+						<label class="control-label" for="placeOfService">Place of Service</label>
+						<div class="controls">
+							<select name="placeOfService" ng-model='form.placeOfService' ng-options='option.value as option.name for option in placeOfServiceOptions'></select>
+
+						</div> <!-- /controls -->		
+					</div> <!-- /control-group -->
+
+					<div class="control-group">											
+						<label class="control-label" for="from">From</label>
+						<div class="controls">
+							<input type="text" maxlength="0" class="span2" name="from" id="from">
+						</div> 
+					</div> 
+					
+					<div class="control-group">											
+						<label class="control-label" for="to">To</label>
+						<div class="controls">
+							<input type="text" maxlength="0" class="span2" name="to" id="to">
+						</div> 
+					</div> 
+					
+					<br />
+					
+					<div class="form-actions">
+						<button type="submit" class="btn btn-primary" id="button">Export</button> 
+					</div>
+				</fieldset>
+				<input type="hidden" name="report" value="clientVisits" />
+			</form>
+		</div>		
+	</div>
+</div>
+</div>
+<div class="span6">
+<div class="widget widget-nopad">
+	<div class="widget">
+		<div class="widget-header"> <i class="icon-file"></i>
+		  <h3>Export client data by income range</h3>
+		</div>
+			
+		<!-- /widget-header -->
+		<div class="widget-content">
+			<form method="post" id="edit-profile" class="form-horizontal" action="php/export.php" target="_blank">
+				<fieldset>
+					<br/>
+                 
+					<div class="control-group">											
+						<label class="control-label" for="min">Min</label>
+						<div class="controls">
+							<input type="text" class="span2" name="min" id="min">
+						</div> 
+					</div> 
+					
+					<div class="control-group">											
+						<label class="control-label" for="max">Max</label>
+						<div class="controls">
+							<input type="text" class="span2" name="max" id="max">
+						</div> 
+					</div> 
+			
+					<br />
+					
+					<div class="form-actions">
+						<button type="submit" class="btn btn-primary" id="button">Export</button> 
+					</div>
+				</fieldset>
+				<input type="hidden" name="report" value="clientData" />
+			</form>
+		</div>
+		<!-- /widget-content --> 
+	</div>
+</div>
+</div>
+
+<script>
+  $(function() {
+	
+	$( "#from" ).datepicker({
+      changeMonth: true,
+      changeYear: true,
+	  dateFormat: "yy-mm-dd"
+    });
+	
+	$( "#to" ).datepicker({
+      changeMonth: true,
+      changeYear: true,
+	  dateFormat: "yy-mm-dd"
+    });
+  });
+</script>

@@ -1,0 +1,303 @@
+<div ng-controller="insertController">
+<div class="alertt alertt-danger" style="display:none;">
+      <strong>Warning!</strong> <span id="databaseMsg"></span>
+</div>
+<form id="clientAddForm" class="form-horizontal">
+<div class="span6">
+<div class="widget widget-nopad">
+	<div class="widget">
+		<div class="widget-header"> <i class="icon-plus-sign"></i>
+		  <h3>Add Client</h3>
+		</div>
+			
+		<!-- /widget-header -->
+		<div class="widget-content">
+				<fieldset>
+					<div class="form-actions" style="text-align:right;">
+						<button type="submit" class="btn btn-primary" ng-click="insert()">Save</button> 
+					</div> <!-- /form-actions -->
+					
+					<br/>
+					
+					<div class="control-group">											
+						<label class="control-label" for="clientID">Client ID#</label>
+						<div class="controls">{{clientID}}
+						<!--	<input type="text" class="span4 disabled" id="clientID" ng-model="clientID" data-validation="number" data-validation-error-msg="The client ID is not a correct number"> -->
+						</div> <!-- /controls -->	
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="firstname">First Name</label>
+						<div class="controls">
+							<input type="text" class="span4" id="firstname" ng-model="fname" data-validation="custom" data-validation-regexp="[a-zA-Z]" data-validation-error-msg="The first name should contain only letters">
+						</div> <!-- /controls -->
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="lastname">Last Name</label>
+						<div class="controls">
+							<input type="text" class="span4" id="lastname" ng-model="lname" data-validation="custom" data-validation-regexp="[a-zA-Z]" data-validation-error-msg="The last name should contain only letters">
+						</div> <!-- /controls -->	
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="address">Address</label>
+						<div class="controls">
+							<input type="text" class="span4" id="address" ng-model="address">
+						</div> <!-- /controls -->	
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="city">City</label>
+						<div class="controls">
+							<input type="text" class="span4" id="city" ng-model="city">
+						</div> <!-- /controls -->	
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="state">State</label>
+						<div class="controls">
+							<select id="state" class="span4" ng-init="state = 'AZ'" ng-model="state" data-validation="required">
+								<option value="AZ">Arizona</option>
+							</select>
+						</div> <!-- /controls -->		
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="postalCode">Postal Code</label>
+						<div class="controls">
+							<input type="text" class="span4" id="postalCode" ng-model="postalCode">
+						</div> <!-- /controls -->	
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="phone">Phone</label>
+						<div class="controls">
+							<input type="text" class="span4" id="phone" ng-model="phone">
+						</div> <!-- /controls -->
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="email">Email</label>
+						<div class="controls">
+							<input type="text" class="span4" id="email" ng-model="email">
+						</div> <!-- /controls -->
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="employed">Head of household currently employed?</label>
+						<div class="controls">
+							<select id="employed" class="span4" ng-model="employed">
+								<option value="yes">Yes</option>
+								<option value="no">No</option>
+							</select>
+						</div> <!-- /controls -->	
+					</div> <!-- /control-group -->
+					
+					<div class="control-group relative" id="lastDayWorkedDiv" style="display:none;">											
+						<label class="control-label" for="lastDateWorked">Last date worked</label>
+						<div class="controls">
+							<input type="text" maxlength="0" class="span4" id="lastDateWorked" ng-model="lastDateWorked">
+						</div>	<!-- /controls -->	
+					</div> <!-- /control-group -->
+                    
+					<div class="control-group">											
+						<label class="control-label" for="annualIncome">Annual Income</label>
+						<div class="controls">
+							<input type="text" class="span4" id="annualIncome" ng-model="annualIncome">
+						</div> <!-- /controls -->
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="incomeUpdated">Income Updated</label>
+						<div class="controls">
+							<input type="text" class="span4" id="incomeUpdated" ng-model="incomeUpdated" maxlength="0">
+						</div> <!-- /controls -->
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="inHouse">How many in house</label>
+						<div class="controls">
+							<select id="inHouse" class="span4" ng-model="inHouse">
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+                                <option value="6">6</option>
+								<option value="7">7</option>
+								<option value="8">8</option>
+								<option value="9">9</option>
+								<option value="10">10+</option>
+							</select>
+						</div> <!-- /controls -->	
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="howManyMales">How many males</label>
+						<div class="controls">
+							<select id="howManyMales" class="span4" ng-model="howManyMales">
+								<option value="0">0</option>
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+								<option value="6">6</option>
+								<option value="7">7</option>
+								<option value="8">8</option>
+								<option value="9">9</option>
+							</select>
+						</div> <!-- /controls -->
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="howManyFemales">How many females</label>
+						<div class="controls">
+							<select id="howManyFemales" class="span4" ng-model="howManyFemales" data-validation="required">
+								<option value="0">0</option>
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+								<option value="6">6</option>
+								<option value="7">7</option>
+								<option value="8">8</option>
+								<option value="9">9</option>
+							</select>
+						</div> <!-- /controls -->
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="ageGroups">Age groups (for multiple hold ctrl)</label>
+						<div class="controls">
+							<select id="ageGroups" class="span4" ng-model="ageGroups" multiple>
+								<option value="1-5">1 - 5</option>
+								<option value="6-11">6 - 11</option>
+								<option value="12-18">12 - 18</option>
+								<option value="19-29">19 - 29</option>
+                                <option value="30-49">30 - 49</option>
+								<option value="50-69">50 - 69</option>
+								<option value="70-100">70 - 100+</option>
+							</select>
+						</div> <!-- /controls -->
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="comments">Client notes</label>
+						<div class="controls">
+							<textarea rows="2" class="span4" id="comments" ng-model="comments"></textarea>
+						</div> <!-- /controls -->									
+					</div> <!-- /control-group -->
+					
+					<br />
+					
+				</fieldset>
+			
+		</div>
+		<!-- /widget-content --> 
+	</div>
+</div>
+</div>
+<div class="span6">
+<div class="widget widget-nopad">
+	<div class="widget">
+		<div class="widget-header"> <i class="icon-plus-sign"></i>
+		  <h3>Add Visit</h3>
+		</div>
+			
+		<!-- /widget-header -->
+		<div class="widget-content">
+				<fieldset>
+					
+					<br/>
+					
+					<div class="control-group relative">											
+						<label class="control-label" for="placeOfService">Place of Service</label>
+						<div class="controls">
+							<select ng-change="changeItems();" ng-model='form.placeOfService' ng-options='option.value as option.name for option in placeOfServiceOptions'></select>
+
+						</div> <!-- /controls -->		
+					</div> <!-- /control-group -->					
+					
+					<div class="control-group relative">											
+						<label class="control-label" for="dateOfVisit">Date of Visit</label>
+						<div class="controls">
+							<input type="text" maxlength="0" class="span4" id="dateOfVisit" ng-model="dateOfVisit" data-validation="date">
+						</div> <!-- /controls -->		
+					</div> <!-- /control-group -->
+					
+					<div class="control-group relative">											
+						<label class="control-label" for="program">Item</label>
+						<div class="controls">
+							<select ng-change="showType();" id="program" class="span4" ng-model="program" ng-options='option.name for option in programOptions'></select>
+						</div> <!-- /controls -->	
+					</div> <!-- /control-group -->
+					
+					<div class="control-group relative" ng-show="itemType('Weight')">										
+						<label class="control-label" for="weight">Weight (lbs)</label>
+						<div class="controls">
+							<input type="text" class="span4" id="weight" ng-model="weight">
+						</div> <!-- /controls -->
+					</div> <!-- /control-group -->
+					
+					<div class="control-group relative" ng-show="itemType('Number')">										
+						<label class="control-label" for="numOfItems">Number of items</label>
+						<div class="controls">
+							<input type="text" class="span4" id="numOfItems" ng-model="numOfItems">
+						</div> <!-- /controls -->
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="volunteer">Volunteer</label>
+						<div class="controls">
+							<select id="volunteer" class="span4" ng-model="volunteer" ng-options="v.volunteer for v in volunteers track by v.volunteer" data-validation="required" data-validation-error-msg="You did not pick a volunteer"><option></option></select>
+						</div> <!-- /controls -->	
+					</div> <!-- /control-group -->
+					
+					<div class="control-group">											
+						<label class="control-label" for="visitNotes">Notes</label>
+						<div class="controls">
+							<textarea rows="2" class="span4" id="visitNotes" ng-model="visitNotes"></textarea>
+						</div> <!-- /controls -->									
+					</div> <!-- /control-group -->
+									
+				</fieldset>
+			
+		</div>
+		<!-- /widget-content --> 
+	</div>
+</div>
+</div></form>
+</div>
+<script>
+  $(function() {
+	$("#employed").on("change",function(){ 
+	  if(this.value == 'no'){ 
+		$('#lastDayWorkedDiv').show();
+	  }
+	  if(this.value == 'yes'){ 
+		$('#lastDayWorkedDiv').hide();
+	  }
+	});
+
+    $( "#dateOfVisit" ).datepicker({
+      changeMonth: true,
+      changeYear: true,
+	  dateFormat: "yy-mm-dd"
+    });
+	
+	$( "#lastDateWorked" ).datepicker({
+      changeMonth: true,
+      changeYear: true,
+	  dateFormat: "yy-mm-dd"
+    });
+	
+	$( "#incomeUpdated" ).datepicker({
+      changeMonth: true,
+      changeYear: true,
+	  dateFormat: "yy-mm-dd"
+    });
+  });
+</script>
