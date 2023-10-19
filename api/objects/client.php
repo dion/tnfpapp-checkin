@@ -324,9 +324,9 @@ class Client{
 					foreach($itemsArray as $key => $item){
 						array_push($items, $item['item']);
 						$quantity = $quantity + $item['quantity'];
-						$lastTimeStamp = $item['timestamp']; // origDateFix this is the fix lol
+						// $lastTimeStamp = $item['timestamp']; // TODO: move out of here and change this to $this->date_of_visit lol
 					}
-					
+
 					// insert into visits table also so that the visit appears in main app
 					$query3 = "INSERT INTO `visits` (`id`, `place_of_service`, `date_of_visit`, `program`, `numBags`, `weight`, `numOfItems`, `client_id`) VALUES (NULL, :placeOfService, :dateOfVisit, :program, 0, '', :numOfItems, :c_id)";
 			
@@ -336,7 +336,7 @@ class Client{
 					// bind the values
 					$stmt3->bindParam(':placeOfService', $this->placeOfService);
 					// $stmt3->bindParam(':dateOfVisit', date("Y-m-d")); // origDateFix remove this line 
-					$stmt3->bindParam(':dateOfVisit', $lastTimeStamp); // origDateFix this is the fix
+					$stmt3->bindParam(':dateOfVisit', $this->date_of_visit); // origDateFix this is the fix
 					$stmt3->bindParam(':program', implode(", ", $items));
 					$stmt3->bindParam(':numOfItems', $quantity);
 					$stmt3->bindParam(':c_id', $this->c_id);
