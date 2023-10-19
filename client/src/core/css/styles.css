@@ -1,0 +1,5 @@
+#servingModal .modal-dialog {
+    right: 0;
+    position: absolute;
+    width: 35%;
+}
