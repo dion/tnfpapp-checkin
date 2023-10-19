@@ -82,7 +82,7 @@ const Serving = (props) => {
                       <td>{client.fname}</td>
                       <td>{client.lname}</td>
                       <td>{client.familyNumber}</td>
-                      <td>
+                      <td style={{maxWidth: 230 + 'px'}}>
                         <ul>
                           {client.items && (
                             <DisplayItems items={client.items} />

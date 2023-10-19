@@ -106,6 +106,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
 
   const handleChange = (name) => (event) => {
     if (name == "item") {
+      // note: when item select menu changes this fires
       const itemType = document.querySelector(
         `option[value="${event.target.value}"]`
       ).dataset.type;
