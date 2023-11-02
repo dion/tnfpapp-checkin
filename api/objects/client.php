@@ -275,7 +275,10 @@ class Client{
 
     	    for($i = 0; $i < count($clients); $i++){
 					// $query = "SELECT visit_items.* FROM visit_items INNER JOIN items ON visit_items.item = items.name AND items.place_of_service= :placeOfService WHERE c_id = :c_id and visit_items.timestamp <= ( NOW() - INTERVAL 7 DAY ) and status = 'serving' or status = ''  OR c_id = :c_id and visit_items.timestamp <= NOW() and status = 'serving' or status = ''";
-					$query = "SELECT visit_items.* FROM visit_items INNER JOIN items ON visit_items.item = items.name AND items.place_of_service= :placeOfService WHERE c_id = :c_id and active = 1"; // new fix
+					$query = "SELECT visit_items.*, items.itemType FROM visit_items 
+						INNER JOIN items ON visit_items.item = items.name 
+						AND items.place_of_service= :placeOfService 
+						WHERE c_id = :c_id and active = 1"; // new fix
                     // prepare the query
         	        $stmt = $this->conn->prepare($query);
 

@@ -21,6 +21,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
   const [weightValue, setWeightValue] = useState("");
   const [numItemsValue, setNumItemsValue] = useState("");
   const [dateOfVisit, setDateOfVisit] = useState("");
+  const [tabState, setTabState] = useState("edit");
   const history = useHistory();
 
   const [methodsOfPickup, setMethodsOfPickup] = useState([
@@ -51,27 +52,48 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
     if (client?.items) {
       const currentItem = client.items.find(itm => itm.item == visit.item);
 
-      console.log('currentItem', currentItem);
-      setDateOfVisit(formatDate(currentItem.timestamp));
+      if (currentItem?.timestamp) {
+        setDateOfVisit(formatDate(currentItem.timestamp));
+      }
 
-      // TODO: set notes here
-      // where are notes being set?
+      if (currentItem?.notes) {
+        setVisit({ ...visit, notes: currentItem.notes });
+      }
+
+      if (currentItem?.itemType == 'Weight') {
+        setWeightValue(currentItem.quantity);
+      }
+
+      if (currentItem?.itemType == 'Number') {
+        setNumItemsValue(currentItem.quantity);
+      }
+
+      if (!currentItem) {
+        resetFields();
+      }
+
     }
   }, [visit.item]);
 
   useEffect(() => {
     if (visitSaved) {
       setVisitSaved(false);
-      setWeightValue("");
-      setNumItemsValue("");
-      // setDateOfVisit(""); 
-      setVisit({ ...visit, notes: "" });
+      resetFields();
       refreshFunction();
       handleGetClients();
     }
   }, [visitSaved]);
 
   const { date_of_visit, item, notes, weight, numOfItems } = visit;
+  const resetFields = () => {
+    setWeightValue("");
+    setNumItemsValue("");
+    setDateOfVisit(""); 
+    setVisit({ ...visit, notes: "" });
+  };
+  const toggleTab = (type) => {
+    setTabState(type);
+  };
 
   useEffect(() => {
     if (type === "editCheckin") {
@@ -222,39 +244,46 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
   const handleVisitBeforeCheckout = (e) => {
     e.preventDefault();
 
-    if (weight === 0) {
-      if (weightValue === "") {
-        alert("Weight value can not be empty");
+    if (tabState == 'edit') {
+      console.log('saving edit');
+    }
+
+    if (tabState == 'add') {
+      console.log('saving add');
+      if (weight === 0) {
+        if (weightValue === "") {
+          alert("Weight value can not be empty");
+          return false;
+        }
+      }
+
+      if (numOfItems === 0) {
+        if (numItemsValue === "") {
+          alert("Number of items can not be empty");
+          return false;
+        }
+      }
+
+      if (dateOfVisit.length <= 0) {
+        alert("Error: Date of Visit can't be empty!");
         return false;
       }
+
+      const visit = {
+        id: client.id,
+        c_id: client.c_id,
+        place_of_service: client.placeOfService,
+        date_of_visit,
+        item,
+        notes,
+        weight,
+        numOfItems,
+      };
+
+      saveClientVisitItem(visit).then((response) => {
+        setVisitSaved(true);
+      });
     }
-
-    if (numOfItems === 0) {
-      if (numItemsValue === "") {
-        alert("Number of items can not be empty");
-        return false;
-      }
-    }
-
-    if (dateOfVisit.length <= 0) {
-      alert("Error: Date of Visit can't be empty!");
-      return false;
-    }
-
-    const visit = {
-      id: client.id,
-      c_id: client.c_id,
-      place_of_service: client.placeOfService,
-      date_of_visit,
-      item,
-      notes,
-      weight,
-      numOfItems,
-    };
-
-    saveClientVisitItem(visit).then((response) => {
-      setVisitSaved(true);
-    });
   };
 
   const handleGetClients = () => {
@@ -524,119 +553,231 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
             </button>
           </div>
           <div className="modal-body">
-            <div className="form-group col-sm">
-              <div
-                className="alert alert-success"
-                role="alert"
-                style={{ display: visitSaved ? "block" : "none" }}
-              >
-                Client visit has been saved!
-              </div>
-
-              <label htmlFor="dateOfVisit">
-                <strong>Date of Visit</strong>
-              </label>
-              {/* TODO: get dateOfVisit value from client.items.find(itm.item == visit.item) */}
-              {/* TODO: use visit.item value to get item select menu value  */}
-              <input
-                onChange={handleChange("date_of_visit")}
-                type="date"
-                className="form-control"
-                id="dateOfVisit"
-                value={dateOfVisit}
-              />
+            <div
+              className="alert alert-success"
+              role="alert"
+              style={{ display: visitSaved ? "block" : "none" }}
+            >
+              Client visit has been saved!
             </div>
-            <div className="form-group col-sm">
-              <label htmlFor="item">
-                <strong>Item</strong>
-              </label>
 
-              <div className="input-group mb-3">
-                {items && (
-                  <select
-                    onChange={handleChange("item")}
-                    className="custom-select"
-                    id="item"
-                  >
-                    {items.map((i, index) => {
-                      if (item !== "") {
-                        if (i.name === item) {
-                          return (
-                            <option
-                              key={index}
-                              selected
-                              data-type={i.itemType}
-                              value={i.name}
-                            >
-                              {i.name}
-                            </option>
-                          );
-                        }
-                      }
+            <ul class="nav nav-tabs tabs-serving-modal" >
+              <li class="nav-item">
+                <button 
+                  class="nav-link" 
+                  className={`nav-link ${tabState == 'edit' ? 'active' : ''}`}
+                  type="button" 
+                  onClick={() => toggleTab('edit')}>Edit</button>
+              </li>
+              <li class="nav-item">
+                <button 
+                  className={`nav-link ${tabState == 'add' ? 'active' : ''}`}
+                  type="button" 
+                  onClick={() => toggleTab('add')}>Add New</button>
+              </li>
+            </ul>
 
+            <div class="card">
+              {tabState == 'edit' ?
+                <div class="card-body">
+                  <div className="form-group col-sm" style={{ paddingLeft: 0 }}>
+                  <label htmlFor="dateOfVisit">
+                    <strong>Date of Visit</strong>
+                  </label>
+                  <input
+                    onChange={handleChange("date_of_visit")}
+                    type="date"
+                    className="form-control"
+                    id="dateOfVisit"
+                    value={dateOfVisit}
+                  />
+                </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <strong>Items</strong>
+                    </div>
+                    <div class="col-md-6">
+                      {/* <strong style={{ paddingLeft: '15px' }}>Value</strong> */}
+                    </div>
+                  </div>
+                  {client?.items ?
+                    client.items.map((itm, index) => {
                       return (
-                        <option
-                          key={index}
-                          data-type={i.itemType}
-                          value={i.name}
+                        <div class="row" key={index}>
+                          <div class="col-md-6">
+                            {itm.item}
+                            </div>
+                          <div class="col-md-6">                            
+                            {/* {itm.quantity} */}
+                            {itm.itemType == "Weight" ? 
+                              <div
+                                className="form-group col-sm"
+                              >
+                                {/* <label htmlFor="weight">
+                                  <strong>Weight</strong>
+                                </label> */}
+                                <input
+                                  type="number"
+                                  className="form-control"
+                                  id="weight"
+                                  onChange={handleChange("weight")}
+                                  value={weightValue}
+                                  required
+                                  placeholder="enter weight"
+                                />
+                              </div>
+                            : null}
+                            {itm.itemType == "Number" ? 
+                              <div
+                                className="form-group col-sm"
+                              >
+                                {/* <label htmlFor="numOfItems">
+                                  <strong>Number of items</strong>
+                                </label> */}
+                                <input
+                                  type="number"
+                                  className="form-control"
+                                  id="numOfItems"
+                                  onChange={handleChange("numOfItems")}
+                                  value={numItemsValue}
+                                  required
+                                  placeholder="enter quantity"
+                                />
+                              </div>
+                            : null}
+                          </div>
+                          {itm.item == 'Other' ?
+                            <div class="col-md-12">
+                              <div className="form-group col-sm" style={{ paddingLeft: 0 }}>
+                                <textarea
+                                  onChange={handleChange("notes")}
+                                  className="form-control rounded-0"
+                                  id="notes"
+                                  rows="3"
+                                  value={notes}
+                                  placeholder="Enter notes"
+                                >
+                                  {notes}
+                                </textarea>
+                              </div>
+                            </div>
+                          : null}
+                        </div>
+                      )
+                    })
+                  : null}
+                </div>
+              :
+                <div class="card-body" style={{ paddingLeft: '5px' }}>
+                  {/* edit card body content */}
+                  <div className="form-group col-sm">
+                    <label htmlFor="dateOfVisit">
+                      <strong>Date of Visit</strong>
+                    </label>
+                    <input
+                      onChange={handleChange("date_of_visit")}
+                      type="date"
+                      className="form-control"
+                      id="dateOfVisit"
+                      value={dateOfVisit}
+                    />
+                  </div>
+                  <div className="form-group col-sm">
+                    <label htmlFor="item">
+                      <strong>Item</strong>
+                    </label>
+
+                    <div className="input-group mb-3">
+                      {items && (
+                        <select
+                          onChange={handleChange("item")}
+                          className="custom-select"
+                          id="item"
                         >
-                          {i.name}
-                        </option>
-                      );
-                    })}
-                  </select>
-                )}
-              </div>
-            </div>
-            {visit.itemType == "Weight" ? 
-              <div
-                className="form-group col-sm"
-              >
-                <label htmlFor="weight">
-                  <strong>Weight</strong>
-                </label>
-                <input
-                  type="number"
-                  className="form-control"
-                  id="weight"
-                  onChange={handleChange("weight")}
-                  value={weightValue}
-                  required
-                />
-              </div>
-            : null}
-            {visit.itemType == "Number" ? 
-              <div
-                className="form-group col-sm"
-              >
-                <label htmlFor="numOfItems">
-                  <strong>Number of items</strong>
-                </label>
-                <input
-                  type="number"
-                  className="form-control"
-                  id="numOfItems"
-                  onChange={handleChange("numOfItems")}
-                  value={numItemsValue}
-                  required
-                />
-              </div>
-            : null}
-            <div className="form-group col-sm">
-              <label htmlFor="notes">
-                <strong>Notes</strong>
-              </label>
-              <textarea
-                onChange={handleChange("notes")}
-                className="form-control rounded-0"
-                id="notes"
-                rows="3"
-                value={notes}
-              >
-                {notes}
-              </textarea>
+                          {items.map((i, index) => {
+                            if (item !== "") {
+                              if (i.name === item) {
+                                return (
+                                  <option
+                                    key={index}
+                                    selected
+                                    data-type={i.itemType}
+                                    value={i.name}
+                                  >
+                                    {i.name}
+                                  </option>
+                                );
+                              }
+                            }
+
+                            return (
+                              <option
+                                key={index}
+                                data-type={i.itemType}
+                                value={i.name}
+                              >
+                                {i.name}
+                              </option>
+                            );
+                          })}
+                        </select>
+                      )}
+                    </div>
+                  </div>
+                  {visit.itemType == "Weight" ? 
+                    <div
+                      className="form-group col-sm"
+                    >
+                      <label htmlFor="weight">
+                        <strong>Weight</strong>
+                      </label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        id="weight"
+                        onChange={handleChange("weight")}
+                        value={weightValue}
+                        required
+                      />
+                    </div>
+                  : null}
+                  {visit.itemType == "Number" ? 
+                    <div
+                      className="form-group col-sm"
+                    >
+                      <label htmlFor="numOfItems">
+                        <strong>Number of items</strong>
+                      </label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        id="numOfItems"
+                        onChange={handleChange("numOfItems")}
+                        value={numItemsValue}
+                        required
+                      />
+                    </div>
+                  : null}
+                  <div className="form-group col-sm">
+                    <label htmlFor="notes">
+                      <strong>Notes</strong>
+                    </label>
+                    <textarea
+                      onChange={handleChange("notes")}
+                      className="form-control rounded-0"
+                      id="notes"
+                      rows="3"
+                      value={notes}
+                    >
+                      {notes}
+                    </textarea>
+                  </div>
+                  {/*  */}
+                </div>
+              }
             </div>
           </div>
+          {/* end of modal body */}
           <div className="modal-footer">
             <button
               type="button"
