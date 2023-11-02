@@ -14,12 +14,18 @@ const PlaceOfService = (props) => {
   const [errorMsg, setErrMsg] = useState("");
   const [redirect, setRedirect] = useState(false);
   const [places, setPlaces] = useState([]);
+  const [notes, setNotes] = useState('');
+  const [showOtherItemText, setShowOtherItemText] = useState(false);
   const history = useHistory();
 
   const [methodsOfPickup, setMethodsOfPickup] = useState([
     "Drive-Thru",
     "Walk-Up",
   ]);
+
+  const handleNotesChange = (event) => {
+    setNotes(event.target.value);
+  };
 
   // all items at the selected place
   const [items, setItems] = useState([]);
@@ -131,11 +137,17 @@ const PlaceOfService = (props) => {
   const handleItems = (name) => (event) => {
     if (event.target.checked) {
       setClientItems([...clientItems, event.target.value]);
+      if (event.target.value == 'Other') {
+        setShowOtherItemText(true);
+      }
     } else {
       let clientItemsFilter = clientItems.filter(
         (item) => item !== event.target.value
       );
       setClientItems(clientItemsFilter);
+      if (event.target.value == 'Other') {
+        setShowOtherItemText(false);
+      }
     }
   };
 
@@ -167,6 +179,7 @@ const PlaceOfService = (props) => {
             items: clientItems,
             email: client.email,
             methodOfPickup: clientMethodOfPickup,
+            notes: notes
           };
 
           saveClient(clientUpdated).then((response) => {
@@ -255,10 +268,21 @@ const PlaceOfService = (props) => {
                 <label className="form-check-label" htmlFor={index}>
                   {item.name}
                 </label>
+                {showOtherItemText && item.name == 'Other' ?
+                  <div>
+                    <textarea 
+                      style={{ width: '100%' }} 
+                      placeholder="Enter notes here" 
+                      maxLength="250"
+                      rows="8"
+                      value={notes}
+                      onChange={handleNotesChange}></textarea>
+                  </div>
+                : null}
               </div>
             ))}
           </div>
-
+          
           <div className="form-group col-sm">
             <button
               onClick={handleSubmit}

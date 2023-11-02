@@ -113,6 +113,7 @@ const CheckIn = (props) => {
                         onClick={() => setClient(client)}
                         data-toggle="modal"
                         data-target="#checkinModal"
+                        style={{maxWidth: 230 + 'px'}}
                       >
                         <ul>
                           {client.items && (

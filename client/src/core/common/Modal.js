@@ -44,7 +44,20 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
     notes: "",
     weight: "",
     numOfItems: "",
+    itemType: ""
   });
+
+  useEffect(() => {
+    if (client?.items) {
+      const currentItem = client.items.find(itm => itm.item == visit.item);
+
+      console.log('currentItem', currentItem);
+      setDateOfVisit(formatDate(currentItem.timestamp));
+
+      // TODO: set notes here
+      // where are notes being set?
+    }
+  }, [visit.item]);
 
   useEffect(() => {
     if (visitSaved) {
@@ -89,6 +102,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
                 item: selectedItem.name,
                 weight: 0,
                 numOfItems: "",
+                itemType: "Weight"
               });
             } else {
               setVisit({
@@ -96,6 +110,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
                 item: selectedItem.name,
                 weight: "",
                 numOfItems: 0,
+                itemType: "Number"
               });
             }
           }
@@ -103,6 +118,20 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
       });
     }
   }, [client]);
+
+  const formatDate = (date) => {
+    if (!date) return '';
+
+    if (typeof(date) == 'string') {
+      date = new Date(date);
+    }
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const day = String(date.getDate()).padStart(2, '0');
+  
+    return `${year}-${month}-${day}`;
+  };
 
   const handleChange = (name) => (event) => {
     if (name == "item") {
@@ -117,6 +146,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
           item: event.target.value,
           weight: 0,
           numOfItems: "",
+          itemType: 'Weight'
         });
       } else {
         setVisit({
@@ -124,6 +154,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
           item: event.target.value,
           weight: "",
           numOfItems: 0,
+          itemType: 'Number'
         });
       }
     } else {
@@ -162,7 +193,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
         }
       });
 
-      if (!dateOfVisit) { 
+      if (!dateOfVisit) {
         hasError = true;
         errorMessage = `Error: Date of Visit can't be empty!`;
       }
@@ -184,7 +215,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
   };
 
   const refreshPage = (e) => {
-    history.push('/foodpantry?active=serving'); 
+    history.push('/foodpantry?active=serving');
     window.location.reload(false);
   };
 
@@ -205,7 +236,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
       }
     }
 
-    if (dateOfVisit.length <= 0) { 
+    if (dateOfVisit.length <= 0) {
       alert("Error: Date of Visit can't be empty!");
       return false;
     }
@@ -505,6 +536,8 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
               <label htmlFor="dateOfVisit">
                 <strong>Date of Visit</strong>
               </label>
+              {/* TODO: get dateOfVisit value from client.items.find(itm.item == visit.item) */}
+              {/* TODO: use visit.item value to get item select menu value  */}
               <input
                 onChange={handleChange("date_of_visit")}
                 type="date"
@@ -555,38 +588,40 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
                 )}
               </div>
             </div>
-            <div
-              className="form-group col-sm"
-              style={{ display: weight !== "" ? "block" : "none" }}
-            >
-              <label htmlFor="weight">
-                <strong>Weight</strong>
-              </label>
-              <input
-                type="number"
-                className="form-control"
-                id="weight"
-                onChange={handleChange("weight")}
-                value={weightValue}
-                required
-              />
-            </div>
-            <div
-              className="form-group col-sm"
-              style={{ display: numOfItems !== "" ? "block" : "none" }}
-            >
-              <label htmlFor="numOfItems">
-                <strong>Number of items</strong>
-              </label>
-              <input
-                type="number"
-                className="form-control"
-                id="numOfItems"
-                onChange={handleChange("numOfItems")}
-                value={numItemsValue}
-                required
-              />
-            </div>
+            {visit.itemType == "Weight" ? 
+              <div
+                className="form-group col-sm"
+              >
+                <label htmlFor="weight">
+                  <strong>Weight</strong>
+                </label>
+                <input
+                  type="number"
+                  className="form-control"
+                  id="weight"
+                  onChange={handleChange("weight")}
+                  value={weightValue}
+                  required
+                />
+              </div>
+            : null}
+            {visit.itemType == "Number" ? 
+              <div
+                className="form-group col-sm"
+              >
+                <label htmlFor="numOfItems">
+                  <strong>Number of items</strong>
+                </label>
+                <input
+                  type="number"
+                  className="form-control"
+                  id="numOfItems"
+                  onChange={handleChange("numOfItems")}
+                  value={numItemsValue}
+                  required
+                />
+              </div>
+            : null}
             <div className="form-group col-sm">
               <label htmlFor="notes">
                 <strong>Notes</strong>
