@@ -52,7 +52,7 @@ class VisitItems{
    	
     	// if items exists, update item, else insert
     	// select query
-    	$query2 = "SELECT item FROM ". $this->table_name . " WHERE c_id = :c_id AND place_of_service = :place_of_service AND item = :item";
+    	$query2 = "SELECT item FROM ". $this->table_name . " WHERE c_id = :c_id AND place_of_service = :place_of_service AND item = :item and status = 'serving' and active = 1";
     
     	// prepare the query
     	$stmt2 = $this->conn->prepare($query2);

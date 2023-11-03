@@ -1,4 +1,4 @@
-import React, { useEffect, Fragment, useState, useContext } from "react";
+import React, { useEffect, Fragment, useState, useContext, useMemo } from "react";
 import { useHistory } from "react-router-dom";
 import { ClientContext } from "../common/ClientContext";
 import { clientUpdateStatus } from "../common/ClientHelpers";
@@ -22,6 +22,12 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
   const [numItemsValue, setNumItemsValue] = useState("");
   const [dateOfVisit, setDateOfVisit] = useState("");
   const [tabState, setTabState] = useState("edit");
+  const [filteredItems, setFilteredItems] = useState([]);
+  const [formValues, setFormValues] = useState({
+    date_of_visit: '',
+  });
+  const [loading, setLoading] = useState(true);
+
   const history = useHistory();
 
   const [methodsOfPickup, setMethodsOfPickup] = useState([
@@ -50,34 +56,39 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
 
   useEffect(() => {
     if (client?.items) {
-      const currentItem = client.items.find(itm => itm.item == visit.item);
+      const noteLabel = 'notes';
+      let holder = {};
+      let filtered = [];
 
-      if (currentItem?.timestamp) {
-        setDateOfVisit(formatDate(currentItem.timestamp));
-      }
+      setDateOfVisit(formatDate(new Date()));
 
-      if (currentItem?.notes) {
-        setVisit({ ...visit, notes: currentItem.notes });
-      }
+      client.items.forEach((itm) => {
+        if (itm.notes) {
+          holder[itm.id] = itm.quantity;
+          holder[itm.id + '-' + noteLabel] = itm.notes;
+        } else {
+          holder[itm.id] = itm.quantity;
+        }
+        filtered.push(itm.item);
+      });
 
-      if (currentItem?.itemType == 'Weight') {
-        setWeightValue(currentItem.quantity);
-      }
+      setFilteredItems(filtered);
 
-      if (currentItem?.itemType == 'Number') {
-        setNumItemsValue(currentItem.quantity);
-      }
+      setFormValues({
+        ...formValues,
+        ...holder,
+        ['date_of_visit']: client.timestamp,
+      });
 
-      if (!currentItem) {
-        resetFields();
-      }
-
+      setLoading(false);
     }
-  }, [visit.item]);
+  }, [client?.items]);
 
   useEffect(() => {
     if (visitSaved) {
-      setVisitSaved(false);
+      setTimeout(function() {
+        setVisitSaved(false);
+      }, 4000);
       resetFields();
       refreshFunction();
       handleGetClients();
@@ -88,12 +99,28 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
   const resetFields = () => {
     setWeightValue("");
     setNumItemsValue("");
-    setDateOfVisit(""); 
+    // setDateOfVisit(""); 
     setVisit({ ...visit, notes: "" });
   };
   const toggleTab = (type) => {
     setTabState(type);
   };
+  const handleInputChange = (event) => {
+    const { name, value, type } = event.target;
+    setFormValues({
+      ...formValues,
+      [name]: type === 'number' ? parseInt(value) : value,
+    });
+  };
+  const getClientDate = useMemo(() => {
+    let dateValue = new Date();
+
+    if (client?.timestamp) {
+      dateValue = client.timestamp;
+    }
+
+    return dateValue;
+  }, []);
 
   useEffect(() => {
     if (type === "editCheckin") {
@@ -121,7 +148,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
             if (selectedItem.itemType === "Weight") {
               setVisit({
                 ...visit,
-                item: selectedItem.name,
+                item: null,
                 weight: 0,
                 numOfItems: "",
                 itemType: "Weight"
@@ -129,7 +156,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
             } else {
               setVisit({
                 ...visit,
-                item: selectedItem.name,
+                item: null,
                 weight: "",
                 numOfItems: 0,
                 itemType: "Number"
@@ -245,11 +272,40 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
     e.preventDefault();
 
     if (tabState == 'edit') {
-      console.log('saving edit');
+      console.log('formValues', formValues);
+      let counter = 0;
+
+      if (client?.items) {
+        client.items.map((itm) => {
+          const visit = {
+            id: itm.id,
+            c_id: itm.c_id,
+            place_of_service: itm.placeOfService,
+            date_of_visit: formValues.date_of_visit,
+            item: itm.item,
+            notes: Object.keys(formValues).includes(itm.id + '-notes') ? formValues[itm.id + '-notes'] : '',
+            weight: itm.itemType == 'Weight' ? formValues[itm.id] : '',
+            numOfItems: itm.itemType == 'Number' ? formValues[itm.id] : '',
+            place_of_service: itm.place_of_service
+          };
+        
+          saveClientVisitItem(visit).then(() => {
+            counter++;
+            if (counter >= client.items.length) {
+              console.log('inside setting visit saved')
+              setVisitSaved(true);
+            }
+          });
+        });
+      }
     }
 
     if (tabState == 'add') {
-      console.log('saving add');
+      if (item === null) {
+        alert("Item can not be empty");
+        return false;
+      }
+
       if (weight === 0) {
         if (weightValue === "") {
           alert("Weight value can not be empty");
@@ -270,18 +326,20 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
       }
 
       const visit = {
-        id: client.id,
+        // id: client.id,
         c_id: client.c_id,
         place_of_service: client.placeOfService,
-        date_of_visit,
+        date_of_visit: dateOfVisit,
         item,
         notes,
         weight,
-        numOfItems,
+        numOfItems
       };
 
       saveClientVisitItem(visit).then((response) => {
         setVisitSaved(true);
+        refreshPage();
+        // setFilteredItems([...filteredItems, item]);
       });
     }
   };
@@ -561,15 +619,14 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
               Client visit has been saved!
             </div>
 
-            <ul class="nav nav-tabs tabs-serving-modal" >
-              <li class="nav-item">
+            <ul className="nav nav-tabs tabs-serving-modal" >
+              <li className="nav-item">
                 <button 
-                  class="nav-link" 
                   className={`nav-link ${tabState == 'edit' ? 'active' : ''}`}
                   type="button" 
                   onClick={() => toggleTab('edit')}>Edit</button>
               </li>
-              <li class="nav-item">
+              <li className="nav-item">
                 <button 
                   className={`nav-link ${tabState == 'add' ? 'active' : ''}`}
                   type="button" 
@@ -577,37 +634,39 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
               </li>
             </ul>
 
-            <div class="card">
-              {tabState == 'edit' ?
-                <div class="card-body">
+            <div className="card">
+              {tabState == 'edit' && !loading ?
+                <div className="card-body">
                   <div className="form-group col-sm" style={{ paddingLeft: 0 }}>
                   <label htmlFor="dateOfVisit">
                     <strong>Date of Visit</strong>
                   </label>
                   <input
-                    onChange={handleChange("date_of_visit")}
+                    onChange={handleInputChange}
+                    // onChange={handleChange("date_of_visit")}
+                    name="date_of_visit"
                     type="date"
                     className="form-control"
                     id="dateOfVisit"
-                    value={dateOfVisit}
+                    value={formatDate(formValues.date_of_visit)}
                   />
                 </div>
-                  <div class="row">
-                    <div class="col-md-6">
+                  <div className="row">
+                    <div className="col-md-6">
                       <strong>Items</strong>
                     </div>
-                    <div class="col-md-6">
+                    <div className="col-md-6">
                       {/* <strong style={{ paddingLeft: '15px' }}>Value</strong> */}
                     </div>
                   </div>
                   {client?.items ?
                     client.items.map((itm, index) => {
                       return (
-                        <div class="row" key={index}>
-                          <div class="col-md-6">
+                        <div className="row" key={index}>
+                          <div className="col-md-6">
                             {itm.item}
                             </div>
-                          <div class="col-md-6">                            
+                          <div className="col-md-6">                            
                             {/* {itm.quantity} */}
                             {itm.itemType == "Weight" ? 
                               <div
@@ -617,11 +676,13 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
                                   <strong>Weight</strong>
                                 </label> */}
                                 <input
-                                  type="number"
+                                  type="text"
+                                  name={itm.id}
                                   className="form-control"
                                   id="weight"
-                                  onChange={handleChange("weight")}
-                                  value={weightValue}
+                                  onChange={handleInputChange}
+                                  // onChange={handleChange("weight")}
+                                  value={formValues[itm.id]}
                                   required
                                   placeholder="enter weight"
                                 />
@@ -635,11 +696,13 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
                                   <strong>Number of items</strong>
                                 </label> */}
                                 <input
-                                  type="number"
+                                  type="text"
+                                  name={itm.id}
                                   className="form-control"
                                   id="numOfItems"
-                                  onChange={handleChange("numOfItems")}
-                                  value={numItemsValue}
+                                  // onChange={handleChange("numOfItems")}
+                                  onChange={handleInputChange}
+                                  value={formValues[itm.id]}
                                   required
                                   placeholder="enter quantity"
                                 />
@@ -647,17 +710,19 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
                             : null}
                           </div>
                           {itm.item == 'Other' ?
-                            <div class="col-md-12">
+                            <div className="col-md-12">
                               <div className="form-group col-sm" style={{ paddingLeft: 0 }}>
                                 <textarea
-                                  onChange={handleChange("notes")}
+                                  name={`${itm.id}-notes`}
+                                  // onChange={handleChange("notes")}
+                                  onChange={handleInputChange}
                                   className="form-control rounded-0"
                                   id="notes"
                                   rows="3"
-                                  value={notes}
+                                  value={formValues[itm.id + '-notes']}
                                   placeholder="Enter notes"
                                 >
-                                  {notes}
+                                  {formValues[itm.id + '-notes']}
                                 </textarea>
                               </div>
                             </div>
@@ -668,7 +733,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
                   : null}
                 </div>
               :
-                <div class="card-body" style={{ paddingLeft: '5px' }}>
+                <div className="card-body" style={{ paddingLeft: '5px' }}>
                   {/* edit card body content */}
                   <div className="form-group col-sm">
                     <label htmlFor="dateOfVisit">
@@ -694,13 +759,18 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
                           className="custom-select"
                           id="item"
                         >
-                          {items.map((i, index) => {
+                          <option
+                            data-type="null"
+                            value="null"
+                          >
+                            -- Select an Item --
+                          </option>
+                          {items.filter(itm => !filteredItems.includes(itm.name)).map((i, index) => {
                             if (item !== "") {
                               if (i.name === item) {
                                 return (
                                   <option
                                     key={index}
-                                    selected
                                     data-type={i.itemType}
                                     value={i.name}
                                   >
