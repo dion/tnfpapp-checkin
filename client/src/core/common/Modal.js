@@ -27,13 +27,18 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
     date_of_visit: '',
   });
   const [loading, setLoading] = useState(true);
-
+  const [internalNotes, setInternalNotes] = useState('');
+  const [showOtherItemText, setShowOtherItemText] = useState(false);
   const history = useHistory();
 
   const [methodsOfPickup, setMethodsOfPickup] = useState([
     "Drive-Thru",
     "Walk-Up",
   ]);
+
+  const handleNotesChange = (event) => {
+    setInternalNotes(event.target.value);
+  };
 
   const [selectedMethodOfPickup, setSelectedMethodOfPickup] = useState("");
 
@@ -96,6 +101,11 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
   }, [visitSaved]);
 
   const { date_of_visit, item, notes, weight, numOfItems } = visit;
+
+  useEffect(() => {
+    setInternalNotes(notes);
+  }, [notes]);
+
   const resetFields = () => {
     setWeightValue("");
     setNumItemsValue("");
@@ -386,11 +396,17 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
   const handleItems = (name) => (event) => {
     if (event.target.checked) {
       setClientItems([...clientItems, event.target.value]);
+      if (event.target.value == 'Other') {
+        setShowOtherItemText(true);
+      }
     } else {
       let clientItemsFilter = clientItems.filter(
         (item) => item !== event.target.value
       );
       setClientItems(clientItemsFilter);
+      if (event.target.value == 'Other') {
+        setShowOtherItemText(false);
+      }
     }
   };
 
@@ -404,7 +420,8 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
       client.c_id,
       client.placeOfService,
       selectedMethodOfPickup,
-      clientItems
+      clientItems,
+      internalNotes
     ).then((result) => {
       console.log("result ", result);
       history.push('/foodpantry');
@@ -489,6 +506,17 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
                         <label className="form-check-label" htmlFor={index}>
                           {item.name}
                         </label>
+                        {item.name == 'Other' ?
+                          <div>
+                            <textarea 
+                              style={{ width: '100%' }} 
+                              placeholder="Enter notes here" 
+                              maxLength="250"
+                              rows="8"
+                              value={internalNotes}
+                              onChange={handleNotesChange}></textarea>
+                          </div>
+                        : null}
                       </div>
                     );
                   }
@@ -504,6 +532,17 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
                       <label className="form-check-label" htmlFor={index}>
                         {item.name}
                       </label>
+                      {showOtherItemText && item.name == 'Other' ?
+                        <div>
+                          <textarea 
+                            style={{ width: '100%' }} 
+                            placeholder="Enter notes here" 
+                            maxLength="250"
+                            rows="8"
+                            value={internalNotes}
+                            onChange={handleNotesChange}></textarea>
+                        </div>
+                      : null}
                     </div>
                   );
                 })}

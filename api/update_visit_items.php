@@ -47,6 +47,7 @@ if($jwt && $data->client_id){
         $visitItems->place_of_service = $data->placeOfService;
         $visitItems->methodOfPickup = $data->methodOfPickup;
         $visitItems->items = $data->items;
+        $visitItems->notes = $data->notes;
 
         if($visitItems->updateVisitItems()){
             // set response code

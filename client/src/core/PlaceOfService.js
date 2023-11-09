@@ -49,7 +49,7 @@ const PlaceOfService = (props) => {
           setErrMsg(response.data.error);
         } else {
           setError(false);
-          setPlaces(response.data.places);
+          setPlaces(response.data.places.filter(item => item.place_of_service !== 'Null'));
         }
       } else {
         setError(true);
