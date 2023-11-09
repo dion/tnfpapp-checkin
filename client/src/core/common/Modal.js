@@ -71,6 +71,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
         if (itm.notes) {
           holder[itm.id] = itm.quantity;
           holder[itm.id + '-' + noteLabel] = itm.notes;
+          setInternalNotes(itm.notes);
         } else {
           holder[itm.id] = itm.quantity;
         }
@@ -101,10 +102,6 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
   }, [visitSaved]);
 
   const { date_of_visit, item, notes, weight, numOfItems } = visit;
-
-  useEffect(() => {
-    setInternalNotes(notes);
-  }, [notes]);
 
   const resetFields = () => {
     setWeightValue("");
