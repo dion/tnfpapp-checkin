@@ -322,6 +322,8 @@ class Client{
      	// execute the query, also check if query was successful
     	$result = $stmt->execute();
 
+		// array_push($this->errors, "outside first result");
+
     	if($result){
     	    if($this->status === "checkout"){
 				// select all items from visit_items for that user to be inserted into visits for main app only if its moving from serving to checkout
@@ -353,7 +355,8 @@ class Client{
 					}
 
 					// insert into visits table also so that the visit appears in main app
-					$query3 = "INSERT INTO `visits` (`id`, `place_of_service`, `date_of_visit`, `program`, `numBags`, `weight`, `numOfItems`, `client_id`) VALUES (NULL, :placeOfService, :dateOfVisit, :program, 0, '', :numOfItems, :c_id)";
+					$query3 = "INSERT INTO `visits` (`place_of_service`, `date_of_visit`, `program`, `numBags`, `weight`, `numOfItems`, `client_id`) 
+								VALUES (:placeOfService, :dateOfVisit, :program, 0, '', :numOfItems, :c_id)";
 
 					// prepare the query
 					$stmt3 = $this->conn->prepare($query3);
@@ -361,13 +364,21 @@ class Client{
 					// bind the values
 					$stmt3->bindParam(':placeOfService', $this->placeOfService);
 					// $stmt3->bindParam(':dateOfVisit', date("Y-m-d")); // origDateFix remove this line
-					$stmt3->bindParam(':dateOfVisit', $this->date_of_visit); // origDateFix this is the fix
+					// note: this date_of_visit param is missing on client side
+					if (isset($this->date_of_visit)) {
+						$stmt3->bindParam(':dateOfVisit', $this->date_of_visit); // origDateFix this is the fix 
+					}
+
+					if (isset($this->checked_in)) {
+						$stmt3->bindParam(':dateOfVisit', $this->checked_in); // origDateFix this is the fix 
+					}
+
 					$stmt3->bindParam(':program', implode(", ", $items));
 					$stmt3->bindParam(':numOfItems', $quantity);
 					$stmt3->bindParam(':c_id', $this->c_id);
 
 					// execute the query
-					$result3 = $stmt3->execute();
+					$result3 = $stmt3->execute();  
 
 					if($result3){
 						//$query4 = "UPDATE visit_items SET status = :status WHERE c_id = :c_id AND active = 1 and timestamp <= ( NOW() - INTERVAL 7 DAY ) and status = 'serving' or status = ''  OR c_id = :c_id and visit_items.timestamp <= NOW() and status = 'serving' or status = ''";
@@ -387,8 +398,14 @@ class Client{
 							if($result4){
 								return true;
 							}
+
+							return false;
 					}
+					return true;
+				} else {
+					return false;
 				}
+				return true;
     	    }
     	    else {
                 // $query5 = "UPDATE visit_items SET status = :status WHERE c_id = :c_id AND active = 1 and timestamp <= ( NOW() - INTERVAL 7 DAY ) and status = 'serving' or status = '' OR c_id = :c_id and visit_items.timestamp <= NOW() and status = 'serving' or status = ''";
@@ -408,6 +425,8 @@ class Client{
              	if($result5){
              	    return true;
              	}
+
+				return false;
     	    }
     	}
 

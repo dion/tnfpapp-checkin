@@ -47,8 +47,10 @@ if($jwt){
         $client->status = $data->client->status;
         $client->placeOfService = $data->client->placeOfService;
         $client->date_of_visit = $data->client->date_of_visit; // to use for set date manually for visits
+        $client->checked_in = $data->client->checked_in; // to use for set date manually for visits
+        $client->errors = [];
 
-        if($client->updateStatus()){
+        if($x = $client->updateStatus()){
             
             // set response code
             http_response_code(200);
@@ -56,7 +58,8 @@ if($jwt){
             // response in json format
             echo json_encode(
                     array(
-                        "success" => "User was updated."
+                        "success" => "User was updated.",
+                        "errors" => $client->errors
                     )
                 );
         }
@@ -66,7 +69,8 @@ if($jwt){
             http_response_code(200);
         
             // display message: unable to create user
-            echo json_encode(array("error" => "Unable to update client!"));
+            // echo json_encode(array("error" => "Unable to update client!", "blahs" => $x));
+            echo json_encode(array("error" => "Unable to update client!", "errors" => $client->errors));
         }
     }
 
