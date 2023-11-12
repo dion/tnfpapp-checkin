@@ -52,7 +52,7 @@ class VisitItems{
    	
     	// if items exists, update item, else insert
     	// select query
-    	$query2 = "SELECT item FROM ". $this->table_name . " WHERE c_id = :c_id AND place_of_service = :place_of_service AND item = :item";
+    	$query2 = "SELECT item FROM ". $this->table_name . " WHERE c_id = :c_id AND place_of_service = :place_of_service AND item = :item and status = 'serving' and active = 1";
     
     	// prepare the query
     	$stmt2 = $this->conn->prepare($query2);
@@ -173,19 +173,23 @@ class VisitItems{
             	    // insert items in items table
             	    foreach ($this->items as $item) {
             	        $query = "INSERT INTO visit_items
-            	        (c_id, item, place_of_service, timestamp)
+            	        (c_id, item, place_of_service, timestamp, notes)
                             VALUES 
-                        (:c_id, :item, :placeOfService, :timestamp)";
+                        (:c_id, :item, :placeOfService, :timestamp, :notes)";
                         
                         // prepare the query
             	        $stmt = $this->conn->prepare($query);
-            	        
+            	        $emptyNotes = "";
             	        // bind the values
             	        $stmt->bindParam(':c_id', $this->c_id);
             	        $stmt->bindParam(':item', $item);
             	        $stmt->bindParam(':placeOfService', $this->place_of_service);
 						$stmt->bindParam(':timestamp', $this->date_of_visit); // origDateFix this is the fix lol
-            	        
+						if ($item == "Other") {
+							$stmt->bindParam(':notes', $this->notes);
+						} else {
+							$stmt->bindParam(':notes', $emptyNotes);
+						}
             	        // execute the query
             	        $stmt->execute();
                     }

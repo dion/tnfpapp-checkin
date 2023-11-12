@@ -3,3 +3,19 @@
     position: absolute;
     width: 35%;
 }
+
+.tabs-serving-modal {
+    background-color: transparent;
+    padding: 0;
+}
+
+.tabs-serving-modal .nav-link.active {
+
+}
+
+.tabs-serving-modal .nav-link {
+    cursor: pointer;
+    background-color: transparent !important;
+    color: blue !important;
+    outline: none;
+}

@@ -141,7 +141,8 @@ export const updateCheckinItems = (
   client_id,
   placeOfService,
   methodOfPickup,
-  items
+  items,
+  notes
 ) => {
   const jwt = sessionStorage.getItem("jwt");
 
@@ -151,6 +152,7 @@ export const updateCheckinItems = (
       placeOfService,
       methodOfPickup,
       items,
+      notes,
       jwt,
     })
     .then((response) => response)
