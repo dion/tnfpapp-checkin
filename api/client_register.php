@@ -71,7 +71,8 @@ if($jwt){
             http_response_code(200);
         
             // display message: unable to update client info
-            echo json_encode(array("error" => "Unable to register client info!"));
+            // echo json_encode(array("error" => "Unable to register client info!"));
+            echo json_encode(array("error" => $client->error));
         }
     }
 

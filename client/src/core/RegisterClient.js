@@ -8,8 +8,8 @@ const RegisterClient = ({ location }) => {
   const [error, setError] = useState(false);
   const [errorMsg, setErrMsg] = useState("");
   const [redirect, setRedirect] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [values, setValues] = useState({
-    id: 0,
     fname: "",
     lname: "",
     address: "",
@@ -44,22 +44,43 @@ const RegisterClient = ({ location }) => {
     setValues({ ...values, [name]: event.target.value });
   };
 
+  const arePropertiesNotEmpty = (obj) => {
+    for (let key in obj) {
+      if (obj.hasOwnProperty(key)) { // To make sure it's not from the prototype chain
+        const value = obj[key];
+        if (!value || value.length === undefined || value.length === 0) {
+          return false; // Value is empty or has zero length
+        }
+      }
+  }
+    return true;
+  };
+ 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
-    registerClient(values).then((response) => {
-      if (response) {
-        if (response.data.error) {
-          setError(true);
-          setErrMsg(response.data.error);
+    if (arePropertiesNotEmpty(values) == false) {
+      setError(true);
+      setErrMsg("Some fields are empty!");
+      setIsLoading(false);
+    } else {
+      registerClient(values).then((response) => {
+        if (response) {
+          if (response.data.error) {
+            setError(true);
+            setErrMsg(response.data.error);
+          } else {
+            setRedirect(true);
+          }
+          setIsLoading(false);
         } else {
-          setRedirect(true);
+          setError(true);
+          setErrMsg("No response from server");
+          setIsLoading(false);
         }
-      } else {
-        setError(true);
-        setErrMsg("No response from server");
-      }
-    });
+      });
+    }
   };
 
   const form = () => (
@@ -188,6 +209,7 @@ const RegisterClient = ({ location }) => {
           <button
             onClick={handleSubmit}
             className="btn btn-success btn-lg btn-block"
+            disabled={isLoading}
           >
             Submit
           </button>
