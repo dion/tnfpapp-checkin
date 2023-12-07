@@ -1,4 +1,4 @@
-import React, { useEffect, Fragment, useState, useContext } from "react";
+import React, { useEffect, Fragment, useState, useContext, useMemo } from "react";
 import { useHistory } from "react-router-dom";
 import { ClientContext } from "../common/ClientContext";
 import { clientUpdateStatus } from "../common/ClientHelpers";
@@ -21,12 +21,24 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
   const [weightValue, setWeightValue] = useState("");
   const [numItemsValue, setNumItemsValue] = useState("");
   const [dateOfVisit, setDateOfVisit] = useState("");
+  const [tabState, setTabState] = useState("edit");
+  const [filteredItems, setFilteredItems] = useState([]);
+  const [formValues, setFormValues] = useState({
+    date_of_visit: '',
+  });
+  const [loading, setLoading] = useState(true);
+  const [internalNotes, setInternalNotes] = useState('');
+  const [showOtherItemText, setShowOtherItemText] = useState(false);
   const history = useHistory();
 
   const [methodsOfPickup, setMethodsOfPickup] = useState([
     "Drive-Thru",
     "Walk-Up",
   ]);
+
+  const handleNotesChange = (event) => {
+    setInternalNotes(event.target.value);
+  };
 
   const [selectedMethodOfPickup, setSelectedMethodOfPickup] = useState("");
 
@@ -44,21 +56,78 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
     notes: "",
     weight: "",
     numOfItems: "",
+    itemType: ""
   });
 
   useEffect(() => {
+    if (client?.items) {
+      const noteLabel = 'notes';
+      let holder = {};
+      let filtered = [];
+
+      setDateOfVisit(formatDate(new Date()));
+
+      client.items.forEach((itm) => {
+        if (itm.notes) {
+          holder[itm.id] = itm.quantity;
+          holder[itm.id + '-' + noteLabel] = itm.notes;
+          setInternalNotes(itm.notes);
+        } else {
+          holder[itm.id] = itm.quantity;
+        }
+        filtered.push(itm.item);
+      });
+
+      setFilteredItems(filtered);
+
+      setFormValues({
+        ...formValues,
+        ...holder,
+        ['date_of_visit']: client.timestamp,
+      });
+
+      setLoading(false);
+    }
+  }, [client?.items]);
+
+  useEffect(() => {
     if (visitSaved) {
-      setVisitSaved(false);
-      setWeightValue("");
-      setNumItemsValue("");
-      // setDateOfVisit(""); 
-      setVisit({ ...visit, notes: "" });
+      setTimeout(function() {
+        setVisitSaved(false);
+      }, 4000);
+      resetFields();
       refreshFunction();
       handleGetClients();
     }
   }, [visitSaved]);
 
   const { date_of_visit, item, notes, weight, numOfItems } = visit;
+
+  const resetFields = () => {
+    setWeightValue("");
+    setNumItemsValue("");
+    // setDateOfVisit(""); 
+    setVisit({ ...visit, notes: "" });
+  };
+  const toggleTab = (type) => {
+    setTabState(type);
+  };
+  const handleInputChange = (event) => {
+    const { name, value, type } = event.target;
+    setFormValues({
+      ...formValues,
+      [name]: type === 'number' ? parseInt(value) : value,
+    });
+  };
+  const getClientDate = useMemo(() => {
+    let dateValue = new Date();
+
+    if (client?.timestamp) {
+      dateValue = client.timestamp;
+    }
+
+    return dateValue;
+  }, []);
 
   useEffect(() => {
     if (type === "editCheckin") {
@@ -86,16 +155,18 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
             if (selectedItem.itemType === "Weight") {
               setVisit({
                 ...visit,
-                item: selectedItem.name,
+                item: null,
                 weight: 0,
                 numOfItems: "",
+                itemType: "Weight"
               });
             } else {
               setVisit({
                 ...visit,
-                item: selectedItem.name,
+                item: null,
                 weight: "",
                 numOfItems: 0,
+                itemType: "Number"
               });
             }
           }
@@ -104,8 +175,23 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
     }
   }, [client]);
 
+  const formatDate = (date) => {
+    if (!date) return '';
+
+    if (typeof(date) == 'string') {
+      date = new Date(date);
+    }
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const day = String(date.getDate()).padStart(2, '0');
+  
+    return `${year}-${month}-${day}`;
+  };
+
   const handleChange = (name) => (event) => {
     if (name == "item") {
+      // note: when item select menu changes this fires
       const itemType = document.querySelector(
         `option[value="${event.target.value}"]`
       ).dataset.type;
@@ -116,6 +202,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
           item: event.target.value,
           weight: 0,
           numOfItems: "",
+          itemType: 'Weight'
         });
       } else {
         setVisit({
@@ -123,6 +210,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
           item: event.target.value,
           weight: "",
           numOfItems: 0,
+          itemType: 'Number'
         });
       }
     } else {
@@ -161,7 +249,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
         }
       });
 
-      if (!dateOfVisit) { 
+      if (!dateOfVisit) {
         hasError = true;
         errorMessage = `Error: Date of Visit can't be empty!`;
       }
@@ -183,46 +271,84 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
   };
 
   const refreshPage = (e) => {
-    history.push('/foodpantry?active=serving'); 
+    history.push('/foodpantry?active=serving');
     window.location.reload(false);
   };
 
   const handleVisitBeforeCheckout = (e) => {
     e.preventDefault();
 
-    if (weight === 0) {
-      if (weightValue === "") {
-        alert("Weight value can not be empty");
-        return false;
+    if (tabState == 'edit') {
+      console.log('formValues', formValues);
+      let counter = 0;
+
+      if (client?.items) {
+        client.items.map((itm) => {
+          const visit = {
+            id: itm.id,
+            c_id: itm.c_id,
+            place_of_service: itm.placeOfService,
+            date_of_visit: formValues.date_of_visit,
+            item: itm.item,
+            notes: Object.keys(formValues).includes(itm.id + '-notes') ? formValues[itm.id + '-notes'] : '',
+            weight: itm.itemType == 'Weight' ? formValues[itm.id] : '',
+            numOfItems: itm.itemType == 'Number' ? formValues[itm.id] : '',
+            place_of_service: itm.place_of_service
+          };
+        
+          saveClientVisitItem(visit).then(() => {
+            counter++;
+            if (counter >= client.items.length) {
+              console.log('inside setting visit saved')
+              setVisitSaved(true);
+            }
+          });
+        });
       }
     }
 
-    if (numOfItems === 0) {
-      if (numItemsValue === "") {
-        alert("Number of items can not be empty");
+    if (tabState == 'add') {
+      if (item === null) {
+        alert("Item can not be empty");
         return false;
       }
+
+      if (weight === 0) {
+        if (weightValue === "") {
+          alert("Weight value can not be empty");
+          return false;
+        }
+      }
+
+      if (numOfItems === 0) {
+        if (numItemsValue === "") {
+          alert("Number of items can not be empty");
+          return false;
+        }
+      }
+
+      if (dateOfVisit.length <= 0) {
+        alert("Error: Date of Visit can't be empty!");
+        return false;
+      }
+
+      const visit = {
+        // id: client.id,
+        c_id: client.c_id,
+        place_of_service: client.placeOfService,
+        date_of_visit: dateOfVisit,
+        item,
+        notes,
+        weight,
+        numOfItems
+      };
+
+      saveClientVisitItem(visit).then((response) => {
+        setVisitSaved(true);
+        refreshPage();
+        // setFilteredItems([...filteredItems, item]);
+      });
     }
-
-    if (dateOfVisit.length <= 0) { 
-      alert("Error: Date of Visit can't be empty!");
-      return false;
-    }
-
-    const visit = {
-      id: client.id,
-      c_id: client.c_id,
-      place_of_service: client.placeOfService,
-      date_of_visit,
-      item,
-      notes,
-      weight,
-      numOfItems,
-    };
-
-    saveClientVisitItem(visit).then((response) => {
-      setVisitSaved(true);
-    });
   };
 
   const handleGetClients = () => {
@@ -267,11 +393,17 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
   const handleItems = (name) => (event) => {
     if (event.target.checked) {
       setClientItems([...clientItems, event.target.value]);
+      if (event.target.value == 'Other') {
+        setShowOtherItemText(true);
+      }
     } else {
       let clientItemsFilter = clientItems.filter(
         (item) => item !== event.target.value
       );
       setClientItems(clientItemsFilter);
+      if (event.target.value == 'Other') {
+        setShowOtherItemText(false);
+      }
     }
   };
 
@@ -285,7 +417,8 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
       client.c_id,
       client.placeOfService,
       selectedMethodOfPickup,
-      clientItems
+      clientItems,
+      internalNotes
     ).then((result) => {
       console.log("result ", result);
       history.push('/foodpantry');
@@ -370,6 +503,17 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
                         <label className="form-check-label" htmlFor={index}>
                           {item.name}
                         </label>
+                        {item.name == 'Other' ?
+                          <div>
+                            <textarea 
+                              style={{ width: '100%' }} 
+                              placeholder="Enter notes here" 
+                              maxLength="250"
+                              rows="8"
+                              value={internalNotes}
+                              onChange={handleNotesChange}></textarea>
+                          </div>
+                        : null}
                       </div>
                     );
                   }
@@ -385,6 +529,17 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
                       <label className="form-check-label" htmlFor={index}>
                         {item.name}
                       </label>
+                      {showOtherItemText && item.name == 'Other' ?
+                        <div>
+                          <textarea 
+                            style={{ width: '100%' }} 
+                            placeholder="Enter notes here" 
+                            maxLength="250"
+                            rows="8"
+                            value={internalNotes}
+                            onChange={handleNotesChange}></textarea>
+                        </div>
+                      : null}
                     </div>
                   );
                 })}
@@ -492,115 +647,243 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
             </button>
           </div>
           <div className="modal-body">
-            <div className="form-group col-sm">
-              <div
-                className="alert alert-success"
-                role="alert"
-                style={{ display: visitSaved ? "block" : "none" }}
-              >
-                Client visit has been saved!
-              </div>
-
-              <label htmlFor="dateOfVisit">
-                <strong>Date of Visit</strong>
-              </label>
-              <input
-                onChange={handleChange("date_of_visit")}
-                type="date"
-                className="form-control"
-                id="dateOfVisit"
-                value={dateOfVisit}
-              />
+            <div
+              className="alert alert-success"
+              role="alert"
+              style={{ display: visitSaved ? "block" : "none" }}
+            >
+              Client visit has been saved!
             </div>
-            <div className="form-group col-sm">
-              <label htmlFor="item">
-                <strong>Item</strong>
-              </label>
 
-              <div className="input-group mb-3">
-                {items && (
-                  <select
-                    onChange={handleChange("item")}
-                    className="custom-select"
-                    id="item"
-                  >
-                    {items.map((i, index) => {
-                      if (item !== "") {
-                        if (i.name === item) {
-                          return (
-                            <option
-                              key={index}
-                              selected
-                              data-type={i.itemType}
-                              value={i.name}
-                            >
-                              {i.name}
-                            </option>
-                          );
-                        }
-                      }
+            <ul className="nav nav-tabs tabs-serving-modal" >
+              <li className="nav-item">
+                <button 
+                  className={`nav-link ${tabState == 'edit' ? 'active' : ''}`}
+                  type="button" 
+                  onClick={() => toggleTab('edit')}>Edit</button>
+              </li>
+              <li className="nav-item">
+                <button 
+                  className={`nav-link ${tabState == 'add' ? 'active' : ''}`}
+                  type="button" 
+                  onClick={() => toggleTab('add')}>Add New</button>
+              </li>
+            </ul>
 
+            <div className="card">
+              {tabState == 'edit' && !loading ?
+                <div className="card-body">
+                  <div className="form-group col-sm" style={{ paddingLeft: 0 }}>
+                  <label htmlFor="dateOfVisit">
+                    <strong>Date of Visit</strong>
+                  </label>
+                  <input
+                    onChange={handleInputChange}
+                    // onChange={handleChange("date_of_visit")}
+                    name="date_of_visit"
+                    type="date"
+                    className="form-control"
+                    id="dateOfVisit"
+                    value={formatDate(formValues.date_of_visit)}
+                  />
+                </div>
+                  <div className="row">
+                    <div className="col-md-6">
+                      <strong>Items</strong>
+                    </div>
+                    <div className="col-md-6">
+                      {/* <strong style={{ paddingLeft: '15px' }}>Value</strong> */}
+                    </div>
+                  </div>
+                  {client?.items ?
+                    client.items.map((itm, index) => {
                       return (
-                        <option
-                          key={index}
-                          data-type={i.itemType}
-                          value={i.name}
+                        <div className="row" key={index}>
+                          <div className="col-md-6">
+                            {itm.item}
+                            </div>
+                          <div className="col-md-6">                            
+                            {/* {itm.quantity} */}
+                            {itm.itemType == "Weight" ? 
+                              <div
+                                className="form-group col-sm"
+                              >
+                                {/* <label htmlFor="weight">
+                                  <strong>Weight</strong>
+                                </label> */}
+                                <input
+                                  type="text"
+                                  name={itm.id}
+                                  className="form-control"
+                                  id="weight"
+                                  onChange={handleInputChange}
+                                  // onChange={handleChange("weight")}
+                                  value={formValues[itm.id]}
+                                  required
+                                  placeholder="enter weight"
+                                />
+                              </div>
+                            : null}
+                            {itm.itemType == "Number" ? 
+                              <div
+                                className="form-group col-sm"
+                              >
+                                {/* <label htmlFor="numOfItems">
+                                  <strong>Number of items</strong>
+                                </label> */}
+                                <input
+                                  type="text"
+                                  name={itm.id}
+                                  className="form-control"
+                                  id="numOfItems"
+                                  // onChange={handleChange("numOfItems")}
+                                  onChange={handleInputChange}
+                                  value={formValues[itm.id]}
+                                  required
+                                  placeholder="enter quantity"
+                                />
+                              </div>
+                            : null}
+                          </div>
+                          {itm.item == 'Other' ?
+                            <div className="col-md-12">
+                              <div className="form-group col-sm" style={{ paddingLeft: 0 }}>
+                                <textarea
+                                  name={`${itm.id}-notes`}
+                                  // onChange={handleChange("notes")}
+                                  onChange={handleInputChange}
+                                  className="form-control rounded-0"
+                                  id="notes"
+                                  rows="3"
+                                  value={formValues[itm.id + '-notes']}
+                                  placeholder="Enter notes"
+                                >
+                                  {formValues[itm.id + '-notes']}
+                                </textarea>
+                              </div>
+                            </div>
+                          : null}
+                        </div>
+                      )
+                    })
+                  : null}
+                </div>
+              :
+                <div className="card-body" style={{ paddingLeft: '5px' }}>
+                  {/* edit card body content */}
+                  <div className="form-group col-sm">
+                    <label htmlFor="dateOfVisit">
+                      <strong>Date of Visit</strong>
+                    </label>
+                    <input
+                      onChange={handleChange("date_of_visit")}
+                      type="date"
+                      className="form-control"
+                      id="dateOfVisit"
+                      value={dateOfVisit}
+                    />
+                  </div>
+                  <div className="form-group col-sm">
+                    <label htmlFor="item">
+                      <strong>Item</strong>
+                    </label>
+
+                    <div className="input-group mb-3">
+                      {items && (
+                        <select
+                          onChange={handleChange("item")}
+                          className="custom-select"
+                          id="item"
                         >
-                          {i.name}
-                        </option>
-                      );
-                    })}
-                  </select>
-                )}
-              </div>
-            </div>
-            <div
-              className="form-group col-sm"
-              style={{ display: weight !== "" ? "block" : "none" }}
-            >
-              <label htmlFor="weight">
-                <strong>Weight</strong>
-              </label>
-              <input
-                type="number"
-                className="form-control"
-                id="weight"
-                onChange={handleChange("weight")}
-                value={weightValue}
-                required
-              />
-            </div>
-            <div
-              className="form-group col-sm"
-              style={{ display: numOfItems !== "" ? "block" : "none" }}
-            >
-              <label htmlFor="numOfItems">
-                <strong>Number of items</strong>
-              </label>
-              <input
-                type="number"
-                className="form-control"
-                id="numOfItems"
-                onChange={handleChange("numOfItems")}
-                value={numItemsValue}
-                required
-              />
-            </div>
-            <div className="form-group col-sm">
-              <label htmlFor="notes">
-                <strong>Notes</strong>
-              </label>
-              <textarea
-                onChange={handleChange("notes")}
-                className="form-control rounded-0"
-                id="notes"
-                rows="3"
-                value={notes}
-              >
-                {notes}
-              </textarea>
+                          <option
+                            data-type="null"
+                            value="null"
+                          >
+                            -- Select an Item --
+                          </option>
+                          {items.filter(itm => !filteredItems.includes(itm.name)).map((i, index) => {
+                            if (item !== "") {
+                              if (i.name === item) {
+                                return (
+                                  <option
+                                    key={index}
+                                    data-type={i.itemType}
+                                    value={i.name}
+                                  >
+                                    {i.name}
+                                  </option>
+                                );
+                              }
+                            }
+
+                            return (
+                              <option
+                                key={index}
+                                data-type={i.itemType}
+                                value={i.name}
+                              >
+                                {i.name}
+                              </option>
+                            );
+                          })}
+                        </select>
+                      )}
+                    </div>
+                  </div>
+                  {visit.itemType == "Weight" ? 
+                    <div
+                      className="form-group col-sm"
+                    >
+                      <label htmlFor="weight">
+                        <strong>Weight</strong>
+                      </label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        id="weight"
+                        onChange={handleChange("weight")}
+                        value={weightValue}
+                        required
+                      />
+                    </div>
+                  : null}
+                  {visit.itemType == "Number" ? 
+                    <div
+                      className="form-group col-sm"
+                    >
+                      <label htmlFor="numOfItems">
+                        <strong>Number of items</strong>
+                      </label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        id="numOfItems"
+                        onChange={handleChange("numOfItems")}
+                        value={numItemsValue}
+                        required
+                      />
+                    </div>
+                  : null}
+                  <div className="form-group col-sm">
+                    <label htmlFor="notes">
+                      <strong>Notes</strong>
+                    </label>
+                    <textarea
+                      onChange={handleChange("notes")}
+                      className="form-control rounded-0"
+                      id="notes"
+                      rows="3"
+                      value={notes}
+                    >
+                      {notes}
+                    </textarea>
+                  </div>
+                  {/*  */}
+                </div>
+              }
             </div>
           </div>
+          {/* end of modal body */}
           <div className="modal-footer">
             <button
               type="button"

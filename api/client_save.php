@@ -50,6 +50,7 @@ if($jwt && $data->client->email){
         $client->placeOfService = $data->client->placeOfService;
         $client->methodOfPickup = $data->client->methodOfPickup;
         $client->items = $data->client->items;
+        $client->notes = $data->client->notes;
         $client->email = $data->client->email;
         
         if($client->save()){
