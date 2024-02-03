@@ -48,7 +48,7 @@ if($jwt && $data->visit->c_id){
         $visitItems->notes = $data->visit->notes;
         $visitItems->date_of_visit = $data->visit->date_of_visit; // origDateFix this is the fix lol
         $visitItems->place_of_service = $data->visit->place_of_service;
-
+        $visitItems->debug = '';
 
         if($visitItems->saveVisitItem()){
             // set response code
@@ -57,7 +57,8 @@ if($jwt && $data->visit->c_id){
             // response in json format
             echo json_encode(
                     array(
-                        "success" => "Client visit item saved successfully!"
+                        "success" => "Client visit item saved successfully!",
+                        "debug" => $visitItems->debug
                     )
                 );
         }

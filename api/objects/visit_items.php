@@ -99,9 +99,9 @@ class VisitItems{
             	}  
     	    }
     	    else {
-    	     // insert query item
-			 // origDateFix this is the fix lol
-            	$query = "INSERT INTO ". $this->table_name . " (c_id, item, quantity, notes, place_of_service, timestamp) VALUES (:c_id, :item, :quantity, :notes, :place_of_service, :timestamp)";
+				// $this->debug = "inside else for count(itemExists) > 0";
+    	     	// insert query item
+            	$query = "INSERT INTO ". $this->table_name . " (c_id, item, quantity, notes, place_of_service, timestamp, status) VALUES (:c_id, :item, :quantity, :notes, :place_of_service, :timestamp, 'serving')";
             
             	// prepare the query
             	$stmt = $this->conn->prepare($query);
