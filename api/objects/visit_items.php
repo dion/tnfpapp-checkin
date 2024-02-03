@@ -173,9 +173,9 @@ class VisitItems{
             	    // insert items in items table
             	    foreach ($this->items as $item) {
             	        $query = "INSERT INTO visit_items
-            	        (c_id, item, place_of_service, timestamp, notes)
+            	        (c_id, item, place_of_service, timestamp, notes, quantity)
                             VALUES 
-                        (:c_id, :item, :placeOfService, :timestamp, :notes)";
+                        (:c_id, :item, :placeOfService, :timestamp, :notes, 0)";
                         
                         // prepare the query
             	        $stmt = $this->conn->prepare($query);
