@@ -27,6 +27,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
     date_of_visit: '',
   });
   const [loading, setLoading] = useState(true);
+  const [processingReq, setProcessingReq] = useState(false);
   const [internalNotes, setInternalNotes] = useState('');
   const [showOtherItemText, setShowOtherItemText] = useState(false);
   const history = useHistory();
@@ -277,7 +278,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
 
   const handleVisitBeforeCheckout = (e) => {
     e.preventDefault();
-
+    setProcessingReq(true);
     if (tabState == 'edit') {
       console.log('formValues', formValues);
       let counter = 0;
@@ -301,6 +302,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
             if (counter >= client.items.length) {
               console.log('inside setting visit saved')
               setVisitSaved(true);
+              setProcessingReq(false);
             }
           });
         });
@@ -345,6 +347,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
 
       saveClientVisitItem(visit).then((response) => {
         setVisitSaved(true);
+        setProcessingReq(false);
         refreshPage();
         // setFilteredItems([...filteredItems, item]);
       });
@@ -650,7 +653,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
             <div
               className="alert alert-success"
               role="alert"
-              style={{ display: visitSaved ? "block" : "none" }}
+              style={{ display: visitSaved ? "block" : "none", opacity: visitSaved ? '1' : 0 }}
             >
               Client visit has been saved!
             </div>
@@ -896,6 +899,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
             <button
               onClick={handleVisitBeforeCheckout}
               className="btn btn-success"
+              disabled={processingReq}
             >
               Save
             </button>
