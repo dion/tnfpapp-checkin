@@ -74,7 +74,7 @@ class VisitItems{
     	        // update
     	        // update query item
 				// origDateFix this is the fix lol
-            	$query3 = "UPDATE ". $this->table_name . " SET quantity = :quantity, notes = :notes, timestamp = :date_of_visit WHERE c_id = :c_id AND place_of_service = :place_of_service AND item = :item";
+            	$query3 = "UPDATE ". $this->table_name . " SET quantity = :quantity, notes = :notes, timestamp = :date_of_visit WHERE c_id = :c_id AND place_of_service = :place_of_service AND item = :item and active = 1";
             
             	// prepare the query
             	$stmt3 = $this->conn->prepare($query3);

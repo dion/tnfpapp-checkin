@@ -411,6 +411,11 @@ class Client{
                 // $query5 = "UPDATE visit_items SET status = :status WHERE c_id = :c_id AND active = 1 and timestamp <= ( NOW() - INTERVAL 7 DAY ) and status = 'serving' or status = '' OR c_id = :c_id and visit_items.timestamp <= NOW() and status = 'serving' or status = ''";
 				// $query5 = "UPDATE visit_items SET status = :status WHERE c_id = :c_id AND active = 1 and timestamp <= ( NOW() - INTERVAL 7 DAY ) OR c_id = :c_id and visit_items.timestamp <= NOW() and active = 1";
 				$query5 = "UPDATE visit_items SET status = :status WHERE c_id = :c_id AND active = 1"; // new fix
+				// delete from visits
+				$deleteExistingQuery = "DELETE FROM visits WHERE client_id = :c_id and WEEK(date_of_visit) = WEEK(CURDATE())";
+				$stmtDelete = $this->conn->prepare($deleteExistingQuery);
+				$stmtDelete->bindParam(':c_id', $this->c_id);
+				$resultForDelete = $stmtDelete->execute();
 
             	// prepare the query
             	$stmt5 = $this->conn->prepare($query5);
@@ -422,7 +427,7 @@ class Client{
              	// execute the query, also check if query was successful
             	$result5 = $stmt5->execute();
 
-             	if($result5){
+             	if($result5 && $deleteExistingQuery){
              	    return true;
              	}
 
