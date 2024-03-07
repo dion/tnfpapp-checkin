@@ -92,21 +92,21 @@
 					<div class="control-group relative" id="lastDayWorkedDiv">											
 						<label class="control-label" for="lastDateWorked">Last date worked</label>
 						<div class="controls">
-							<input type="text" maxlength="0" class="span4" id="lastDateWorked" ng-model="client[0].lastDateWorked">
+							<input type="text" maxlength="0" class="span4" id="lastDateWorked" ng-model="client[0].lastDateWorked" data-validation="required" data-validation-error-msg="Last date worked is required.">
 						</div> <!-- /controls -->		
 					</div> <!-- /control-group -->
 					
 					<div class="control-group">											
 						<label class="control-label" for="annualIncome">Annual Income</label>
 						<div class="controls">
-							<input type="text" class="span4" id="annualIncome" ng-model="client[0].annualIncome">
+							<input type="text" class="span4" id="annualIncome" ng-model="client[0].annualIncome" data-validation="required" data-validation-error-msg="Annual income is required.">
 						</div> <!-- /controls -->
 					</div> <!-- /control-group -->
 					
 					<div class="control-group">											
 						<label class="control-label" for="incomeUpdated">Income Updated</label>
 						<div class="controls">
-							<input type="text" class="span4" id="incomeUpdated" ng-model="client[0].incomeUpdated" maxlength="0">
+							<input type="text" class="span4" id="incomeUpdated" ng-model="client[0].incomeUpdated" maxlength="0" data-validation="required" data-validation-error-msg="Income updated date is required.">
 						</div> <!-- /controls -->
 					</div> <!-- /control-group -->	
 					
