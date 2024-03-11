@@ -38,21 +38,21 @@
 					<div class="control-group">											
 						<label class="control-label" for="address">Address</label>
 						<div class="controls">
-							<input type="text" class="span4" id="address" ng-model="client[0].address">
+							<input type="text" class="span4" id="address" ng-model="client[0].address" data-validation="required" data-validation-error-msg="This field is required.">
 						</div> <!-- /controls -->
 					</div> <!-- /control-group -->
 					
 					<div class="control-group">											
 						<label class="control-label" for="city">City</label>
 						<div class="controls">
-							<input type="text" class="span4" id="city" ng-model="client[0].city">
+							<input type="text" class="span4" id="city" ng-model="client[0].city" data-validation="required" data-validation-error-msg="This field is required.">
 						</div> <!-- /controls -->	
 					</div> <!-- /control-group -->
 					
 					<div class="control-group">											
 						<label class="control-label" for="state">State</label>
 						<div class="controls">
-							<select id="state" class="span4" ng-model="client[0].state">
+							<select id="state" class="span4" ng-model="client[0].state" data-validation="required" data-validation-error-msg="This field is required.">
 								<option value="AZ">Arizona</option>
 							</select>
 						</div> <!-- /controls -->		
@@ -61,7 +61,7 @@
 					<div class="control-group">											
 						<label class="control-label" for="postalCode">Postal Code</label>
 						<div class="controls">
-							<input type="text" class="span4" id="postalCode" ng-model="client[0].postalCode">
+							<input type="text" class="span4" id="postalCode" ng-model="client[0].postalCode" data-validation="required" data-validation-error-msg="This field is required.">
 						</div> <!-- /controls -->		
 					</div> <!-- /control-group -->
 					
@@ -82,7 +82,8 @@
 					<div class="control-group">											
 						<label class="control-label" for="employed">Head of household currently employed?</label>
 						<div class="controls">
-							<select id="employed" class="span4" ng-model="client[0].employed">
+							<select id="employed" class="span4" ng-model="client[0].employed" data-validation="required" data-validation-error-msg="This field is required.">
+								<option value="">- Select -</option>
 								<option value="yes">Yes</option>
 								<option value="no">No</option>
 							</select>
@@ -113,7 +114,7 @@
 					<div class="control-group">											
 						<label class="control-label" for="inHouse">How many in house</label>
 						<div class="controls">
-							<select id="inHouse" class="span4" ng-model="client[0].inHouse">	
+							<select id="inHouse" class="span4" ng-model="client[0].inHouse" data-validation="required" data-validation-error-msg="This field is required.">	
 								<option value="1">1</option>
 								<option value="2">2</option>
 								<option value="3">3</option>
@@ -131,7 +132,7 @@
 					<div class="control-group">											
 						<label class="control-label" for="howManyMales">How many males</label>
 							<div class="controls">
-								<select id="howManyMales" class="span4" ng-model="client[0].howManyMales">
+								<select id="howManyMales" class="span4" ng-model="client[0].howManyMales" data-validation="required" data-validation-error-msg="This field is required.">
 									<option value="0">0</option>
 									<option value="1">1</option>
 									<option value="2">2</option>
@@ -149,7 +150,7 @@
 					<div class="control-group">											
 						<label class="control-label" for="howManyFemales">How many females</label>
 						<div class="controls">
-							<select id="howManyFemales" class="span4" ng-model="client[0].howManyFemales">
+							<select id="howManyFemales" class="span4" ng-model="client[0].howManyFemales" data-validation="required" data-validation-error-msg="This field is required.">
 								<option value="0">0</option>
 								<option value="1">1</option>
 								<option value="2">2</option>
@@ -167,7 +168,7 @@
 					<div class="control-group">											
 						<label class="control-label" for="ageGroups">Age groups (for multiple hold ctrl)</label>
 						<div class="controls">
-							<select id="ageGroups" class="span4" ng-model="client[0].ageGroups" multiple>
+							<select id="ageGroups" class="span4" ng-model="client[0].ageGroups" multiple data-validation="required" data-validation-error-msg="This field is required.">
 								<option value="1-5">1 - 5</option>
 								<option value="6-11">6 - 11</option>
 								<option value="12-18">12 - 18</option>
@@ -180,9 +181,9 @@
 					</div> <!-- /control-group -->
 					
 					<div class="control-group">											
-						<label class="control-label" for="comments">Client notes</label>
+						<label class="control-label" for="comments">Date of Birth</label>
 						<div class="controls">
-							<textarea rows="2" class="span4" id="comments" ng-model="client[0].comments"></textarea>
+							<input type="text" class="span4" id="comments" ng-model="client[0].comments" maxlength="0" data-validation="required" data-validation-error-msg="Date of Birth is required.">
 						</div> <!-- /controls -->									
 					</div> <!-- /control-group -->
 					
@@ -335,6 +336,11 @@
 	  dateFormat: 'yy-mm-dd'
     });
 	$( "#incomeUpdated" ).datepicker({
+      changeMonth: true,
+      changeYear: true,
+	  dateFormat: "yy-mm-dd"
+    });
+	$( "#comments" ).datepicker({
       changeMonth: true,
       changeYear: true,
 	  dateFormat: "yy-mm-dd"
