@@ -355,64 +355,53 @@ class Client{
 					}
 
 					// insert into visits table also so that the visit appears in main app
-					// TODO: verify that entry doesn't exist
-
-					$checkExistingQuery = "SELECT * FROM visits WHERE client_id = :c_id and WEEK(date_of_visit) = WEEK(CURDATE())";
-					$stmtCheck = $this->conn->prepare($checkExistingQuery);
-					$stmtCheck->bindParam(':c_id', $this->c_id);
-					$stmtCheck->execute();
-					$rowCount = $stmtCheck->rowCount();
-
-					$this->error = json_encode($rowCount);
-					if ($rowCount == 0) {
-						$query3 = "INSERT INTO `visits` (`place_of_service`, `date_of_visit`, `program`, `numBags`, `weight`, `numOfItems`, `client_id`) 
-									VALUES (:placeOfService, :dateOfVisit, :program, 0, '', :numOfItems, :c_id)";
-
-						// prepare the query
-						$stmt3 = $this->conn->prepare($query3);
-
-						// bind the values
-						$stmt3->bindParam(':placeOfService', $this->placeOfService);
-						// $stmt3->bindParam(':dateOfVisit', date("Y-m-d")); // origDateFix remove this line
-						// note: this date_of_visit param is missing on client side
-						if (isset($this->date_of_visit)) {
-							$stmt3->bindParam(':dateOfVisit', $this->date_of_visit); // origDateFix this is the fix 
-						}
-
-						if (isset($this->checked_in)) {
-							$stmt3->bindParam(':dateOfVisit', $this->checked_in); // origDateFix this is the fix 
-						}
-
-						$stmt3->bindParam(':program', implode(", ", $items));
-						$stmt3->bindParam(':numOfItems', $quantity);
-						$stmt3->bindParam(':c_id', $this->c_id);
-
-						// execute the query
-						$result3 = $stmt3->execute();
-					}
-
-					//if($result3){
-						//$query4 = "UPDATE visit_items SET status = :status WHERE c_id = :c_id AND active = 1 and timestamp <= ( NOW() - INTERVAL 7 DAY ) and status = 'serving' or status = ''  OR c_id = :c_id and visit_items.timestamp <= NOW() and status = 'serving' or status = ''";
-						// $query4 = "UPDATE visit_items SET status = :status WHERE c_id = :c_id AND active = 1 and timestamp <= ( NOW() - INTERVAL 7 DAY ) OR c_id = :c_id and visit_items.timestamp <= NOW() and active = 1";
-					$query4 = "UPDATE visit_items SET status = :status WHERE c_id = :c_id AND active = 1"; // new fix
+					$query3 = "INSERT INTO `visits` (`place_of_service`, `date_of_visit`, `program`, `numBags`, `weight`, `numOfItems`, `client_id`) 
+								VALUES (:placeOfService, :dateOfVisit, :program, 0, '', :numOfItems, :c_id)";
 
 					// prepare the query
-					$stmt4 = $this->conn->prepare($query4);
+					$stmt3 = $this->conn->prepare($query3);
 
-					// bind the value
-					$stmt4->bindParam(':status', $this->status);
-					$stmt4->bindParam(':c_id', $this->c_id);
-
-					// execute the query, also check if query was successful
-					$result4 = $stmt4->execute();
-
-					if($result4){
-						return true;
+					// bind the values
+					$stmt3->bindParam(':placeOfService', $this->placeOfService);
+					// $stmt3->bindParam(':dateOfVisit', date("Y-m-d")); // origDateFix remove this line
+					// note: this date_of_visit param is missing on client side
+					if (isset($this->date_of_visit)) {
+						$stmt3->bindParam(':dateOfVisit', $this->date_of_visit); // origDateFix this is the fix 
 					}
 
-					return false;
-					//}
-					// return true;
+					if (isset($this->checked_in)) {
+						$stmt3->bindParam(':dateOfVisit', $this->checked_in); // origDateFix this is the fix 
+					}
+
+					$stmt3->bindParam(':program', implode(", ", $items));
+					$stmt3->bindParam(':numOfItems', $quantity);
+					$stmt3->bindParam(':c_id', $this->c_id);
+
+					// execute the query
+					$result3 = $stmt3->execute();  
+
+					if($result3){
+						//$query4 = "UPDATE visit_items SET status = :status WHERE c_id = :c_id AND active = 1 and timestamp <= ( NOW() - INTERVAL 7 DAY ) and status = 'serving' or status = ''  OR c_id = :c_id and visit_items.timestamp <= NOW() and status = 'serving' or status = ''";
+						// $query4 = "UPDATE visit_items SET status = :status WHERE c_id = :c_id AND active = 1 and timestamp <= ( NOW() - INTERVAL 7 DAY ) OR c_id = :c_id and visit_items.timestamp <= NOW() and active = 1";
+						$query4 = "UPDATE visit_items SET status = :status WHERE c_id = :c_id AND active = 1"; // new fix
+
+							// prepare the query
+							$stmt4 = $this->conn->prepare($query4);
+
+							// bind the value
+							$stmt4->bindParam(':status', $this->status);
+							$stmt4->bindParam(':c_id', $this->c_id);
+
+							// execute the query, also check if query was successful
+							$result4 = $stmt4->execute();
+
+							if($result4){
+								return true;
+							}
+
+							return false;
+					}
+					return true;
 				} else {
 					return false;
 				}
