@@ -11,6 +11,7 @@ import {
   getItems,
   updateCheckinItems,
 } from "./apiCore";
+import { LBL_REQUESTS } from "./constants";
 import '../css/styles.css';
 
 const Modal = ({ modalId, client, type, refreshFunction, place }) => {
@@ -396,7 +397,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
   const handleItems = (name) => (event) => {
     if (event.target.checked) {
       setClientItems([...clientItems, event.target.value]);
-      if (event.target.value == 'Other') {
+      if (event.target.value == LBL_REQUESTS) {
         setShowOtherItemText(true);
       }
     } else {
@@ -404,7 +405,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
         (item) => item !== event.target.value
       );
       setClientItems(clientItemsFilter);
-      if (event.target.value == 'Other') {
+      if (event.target.value == LBL_REQUESTS) {
         setShowOtherItemText(false);
       }
     }
@@ -506,7 +507,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
                         <label className="form-check-label" htmlFor={index}>
                           {item.name}
                         </label>
-                        {item.name == 'Other' ?
+                        {item.name == LBL_REQUESTS ?
                           <div>
                             <textarea 
                               style={{ width: '100%' }} 
@@ -532,7 +533,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
                       <label className="form-check-label" htmlFor={index}>
                         {item.name}
                       </label>
-                      {showOtherItemText && item.name == 'Other' ?
+                      {showOtherItemText && item.name == LBL_REQUESTS ?
                         <div>
                           <textarea 
                             style={{ width: '100%' }} 
@@ -748,7 +749,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
                               </div>
                             : null}
                           </div>
-                          {itm.item == 'Other' ?
+                          {itm.item == LBL_REQUESTS ?
                             <div className="col-md-12">
                               <div className="form-group col-sm" style={{ paddingLeft: 0 }}>
                                 <textarea

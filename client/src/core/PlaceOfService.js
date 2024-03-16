@@ -8,6 +8,7 @@ import {
   saveClient,
   getClientById,
 } from "./common/apiCore";
+import { LBL_REQUESTS } from "./common/constants";
 
 const PlaceOfService = (props) => {
   const [error, setError] = useState(false);
@@ -137,7 +138,7 @@ const PlaceOfService = (props) => {
   const handleItems = (name) => (event) => {
     if (event.target.checked) {
       setClientItems([...clientItems, event.target.value]);
-      if (event.target.value == 'Other') {
+      if (event.target.value == LBL_REQUESTS) {
         setShowOtherItemText(true);
       }
     } else {
@@ -145,7 +146,7 @@ const PlaceOfService = (props) => {
         (item) => item !== event.target.value
       );
       setClientItems(clientItemsFilter);
-      if (event.target.value == 'Other') {
+      if (event.target.value == LBL_REQUESTS) {
         setShowOtherItemText(false);
       }
     }
@@ -268,7 +269,7 @@ const PlaceOfService = (props) => {
                 <label className="form-check-label" htmlFor={index}>
                   {item.name}
                 </label>
-                {showOtherItemText && item.name == 'Other' ?
+                {showOtherItemText && item.name == LBL_REQUESTS ?
                   <div>
                     <textarea 
                       style={{ width: '100%' }} 
