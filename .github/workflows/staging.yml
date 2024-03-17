@@ -55,7 +55,7 @@ jobs:
     - name: Send files
       run: "rsync -avO ${{ env.RSYNC_FLAGS }} ./api/ ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.DESTINATION }}"
       env:
-        RSYNC_FLAGS: '' #--dry-run
+        RSYNC_FLAGS: '--no-o --no-g --no-perms'
         EXCLUDES: bin/rsync-excludes.txt
         SSH_HOST: cloudways
         DESTINATION: "/home/master/applications/xmdqhzgkdn/public_html/checkin/api/"
