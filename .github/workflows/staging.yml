@@ -43,10 +43,7 @@ jobs:
         local_dir: "api/"
         remote_dir: "/public_html/checkin/api"
       run: |
-        echo "${remote_pass}" > /tmp/rsync_pass
-        chmod 600 /tmp/rsync_pass
         mkdir ~/.ssh
         echo "$remote_key" > ~/.ssh/gh_actions_key
         chmod 600 ~/.ssh/gh_actions_key
-        rsync -avzr --password-file=/tmp/rsync_pass -e "ssh -p ${remote_port} -i ~/.ssh/gh_actions_key -o StrictHostKeyChecking=no" ${local_dir} ${remote_user}@${remote_host}:${remote_dir}
-        rm /tmp/rsync_pass  # Clean up password file
+        rsync -avzr -e "ssh -p ${remote_port} -i ~/.ssh/gh_actions_key -o StrictHostKeyChecking=no" ${local_dir} ${remote_user}@${remote_host}:${remote_dir}
