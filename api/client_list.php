@@ -41,7 +41,8 @@ if($jwt){
         $decoded = JWT::decode($jwt, $key, array('HS256'));
         
         // set client property values
-        $client->status = $data->status;
+        $client->status = isset($data->status) ? $data->status : null;
+        // $client->status = $data->status;
         $client->placeOfService = $data->placeOfService;
         
         if($client->all()){
