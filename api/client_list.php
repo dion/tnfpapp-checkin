@@ -39,7 +39,7 @@ if($jwt){
         
         // decode jwt, if it was a fake jwt it would not be able to decode it using this key
         $decoded = JWT::decode($jwt, $key, array('HS256'));
-        // test
+        
         // set client property values
         $client->status = isset($data->status) ? $data->status : null;
         // $client->status = $data->status;
