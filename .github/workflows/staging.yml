@@ -47,7 +47,7 @@ jobs:
         password: ${{ secrets.SERVER_PASSWORD }}
         source: "api/*"
         strip_components: 1
-        target: "/public_html/checkin/api"
+        target: "/home/master/applications/xmdqhzgkdn/public_html/checkin/api"
         key: ${{ secrets.SSH_PRIVATE_KEY }}
 
     - name: SCP to Server
@@ -58,5 +58,5 @@ jobs:
         password: ${{ secrets.SERVER_PASSWORD }}
         source: "client/build/*"
         strip_components: 1
-        target: "/public_html/checkin"
+        target: "/home/master/applications/xmdqhzgkdn/public_html/checkin/"
         key: ${{ secrets.SSH_PRIVATE_KEY }}
