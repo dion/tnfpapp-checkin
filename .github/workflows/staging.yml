@@ -39,7 +39,7 @@ jobs:
         host: ${{ secrets.SERVER_HOST }}
         username: ${{ secrets.SERVER_USERNAME }}
         password: ${{ secrets.SERVER_PASSWORD }}
-        source: "api"
+        source: "api/*"
         strip_components: 1
         target: "/public_html/checkin/api"
 
@@ -49,6 +49,6 @@ jobs:
         host: ${{ secrets.SERVER_HOST }}
         username: ${{ secrets.SERVER_USERNAME }}
         password: ${{ secrets.SERVER_PASSWORD }}
-        source: "client/build"
+        source: "client/build/*"
         strip_components: 1
         target: "/public_html/checkin"
