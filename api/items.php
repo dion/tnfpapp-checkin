@@ -41,7 +41,7 @@ if($jwt){
         // decode jwt, if it was a fake jwt it would not be able to decode it using this key
         $decoded = JWT::decode($jwt, $key, array('HS256'));
         
-        $item->place_of_service = $data->place_of_service;
+        $item->place_of_service = isset($data->place_of_service) ? $data->place_of_service : null;
 
         if($item->getItems()){
             // set response code

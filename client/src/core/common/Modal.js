@@ -134,9 +134,12 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
   useEffect(() => {
     if (type === "editCheckin") {
       setSelectedMethodOfPickup(client.methodOfPickup);
-      getItems(client.placeOfService).then(({ data }) => {  
-        setItemsCheckin(data.items);
-      });
+
+      if (client.placeOfService) {
+        getItems(client.placeOfService).then(({ data }) => {  
+          setItemsCheckin(data.items);
+        });
+      }
       let selectedItems = [];
       if (client.items) {
         client.items.map((i) => selectedItems.push(i.item));
@@ -145,35 +148,37 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
     }
 
     if (type === "checkout") {
-      getItems(place).then(({ data }) => {
-        setItems(data.items);
+      if (place) {
+        getItems(place).then(({ data }) => {
+          setItems(data.items);
 
-        if (client.items !== undefined && client.items.length > 0) {
-          let selectedItem = data.items.find(
-            (e) => e.name === client.items[0].item
-          );
+          if (client.items !== undefined && client.items.length > 0) {
+            let selectedItem = data.items.find(
+              (e) => e.name === client.items[0].item
+            );
 
-          if (selectedItem !== undefined) {
-            if (selectedItem.itemType === "Weight") {
-              setVisit({
-                ...visit,
-                item: null,
-                weight: 0,
-                numOfItems: "",
-                itemType: "Weight"
-              });
-            } else {
-              setVisit({
-                ...visit,
-                item: null,
-                weight: "",
-                numOfItems: 0,
-                itemType: "Number"
-              });
+            if (selectedItem !== undefined) {
+              if (selectedItem.itemType === "Weight") {
+                setVisit({
+                  ...visit,
+                  item: null,
+                  weight: 0,
+                  numOfItems: "",
+                  itemType: "Weight"
+                });
+              } else {
+                setVisit({
+                  ...visit,
+                  item: null,
+                  weight: "",
+                  numOfItems: 0,
+                  itemType: "Number"
+                });
+              }
             }
           }
-        }
-      });
+        });
+      }
     }
   }, [client]);
 
@@ -516,6 +521,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
                               rows="8"
                               value={internalNotes}
                               onChange={handleNotesChange}></textarea>
+                              {internalNotes}
                           </div>
                         : null}
                       </div>

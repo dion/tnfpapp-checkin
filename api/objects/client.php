@@ -1,5 +1,7 @@
 <?php
 date_default_timezone_set('America/Phoenix');
+chdir(__DIR__ . '/../');
+require_once("constants.php");
 
 // 'client' object
 class Client{
@@ -22,7 +24,10 @@ class Client{
 	public $status;
 	public $familyNumber;
 	public $placeOfService;
+	public $methodOfPickup;
 	public $error;
+	public $items;
+	public $notes;
 
 	// constructor
 	public function __construct($db){
@@ -117,7 +122,7 @@ class Client{
 					$stmt->bindParam(':timestamp', $timestamp);
 					$stmt->bindParam(':quantity', $quantity);
 
-					if ($item == 'Other') {
+					if ($item == LBL_REQUESTS) {
 						$stmt->bindParam(':notes', $this->notes);
 					} else {
 						$blank = '';
@@ -188,7 +193,7 @@ class Client{
             	    // insert items in items table
             	    foreach ($this->items as $item) {
 						// TODO: pass notes into here on checkin
-						// TODO: only pass notes if item == 'Other'
+						// TODO: only pass notes if item == LBL_REQUESTS
             	        $query = "INSERT INTO visit_items
             	        (c_id, item, place_of_service, timestamp, quantity, notes)
                             VALUES
@@ -204,7 +209,7 @@ class Client{
 						$stmt->bindParam(':timestamp', $timestamp);
 						$stmt->bindParam(':quantity', $quantity);
 
-						if ($item == 'Other') {
+						if ($item == LBL_REQUESTS) {
 							$stmt->bindParam(':notes', $this->notes);
 						} else {
 							$blank = '';

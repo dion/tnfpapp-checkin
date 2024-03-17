@@ -1,4 +1,7 @@
 <?php
+chdir(__DIR__ . '/../');
+require_once("constants.php");
+
 // 'visit' object
 class VisitItems{
 
@@ -184,8 +187,8 @@ class VisitItems{
             	        $stmt->bindParam(':c_id', $this->c_id);
             	        $stmt->bindParam(':item', $item);
             	        $stmt->bindParam(':placeOfService', $this->place_of_service);
-						$stmt->bindParam(':timestamp', $this->date_of_visit); // origDateFix this is the fix lol
-						if ($item == "Other") {
+						$stmt->bindParam(':timestamp', $this->date_of_visit);
+						if ($item == LBL_REQUESTS) {
 							$stmt->bindParam(':notes', $this->notes);
 						} else {
 							$stmt->bindParam(':notes', $emptyNotes);

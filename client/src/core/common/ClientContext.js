@@ -12,37 +12,39 @@ export const ClientProvider = (props) => {
   });
 
   useEffect(() => {
-    getClients(clients.place).then((response) => {
-      if (response) {
-        if (response.data.error) {
-          console.log("Response error: ", response.data.error);
+    if (clients.place.length) { 
+      getClients(clients.place).then((response) => {
+        if (response) {
+          if (response.data.error) {
+            console.log("Response error: ", response.data.error);
+          } else {
+            const checkedIn = response.data.clients.filter((client) => {
+              return client.status === "checkin";
+            });
+
+            const serving = response.data.clients.filter((client) => {
+              return client.status === "serving";
+            });
+
+            const checkedOut = response.data.clients.filter((client) => {
+              return client.status === "checkout";
+            });
+
+            setClients((prevClients) => {
+              return {
+                ...prevClients,
+                place: clients.place,
+                checkedIn,
+                serving,
+                checkedOut,
+              };
+            });
+          }
         } else {
-          const checkedIn = response.data.clients.filter((client) => {
-            return client.status === "checkin";
-          });
-
-          const serving = response.data.clients.filter((client) => {
-            return client.status === "serving";
-          });
-
-          const checkedOut = response.data.clients.filter((client) => {
-            return client.status === "checkout";
-          });
-
-          setClients((prevClients) => {
-            return {
-              ...prevClients,
-              place: clients.place,
-              checkedIn,
-              serving,
-              checkedOut,
-            };
-          });
+          console.log("No response error");
         }
-      } else {
-        console.log("No response error");
-      }
-    });
+      });
+    }
 
     const interval = setInterval(() => {
       getClients(clients.place).then((response) => {

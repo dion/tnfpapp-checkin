@@ -42,7 +42,7 @@ if($jwt && $data->client->email){
         $decoded = JWT::decode($jwt, $key, array('HS256'));
         
         // set client property values
-        $client->c_id = $data->client->c_id;
+        $client->c_id = isset($data->client->c_id) ? $data->client->c_id : null;
         $client->fname = $data->client->fname;
         $client->lname = $data->client->lname;
         $client->status = $data->client->status;

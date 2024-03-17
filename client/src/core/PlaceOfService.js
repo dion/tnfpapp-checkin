@@ -119,20 +119,22 @@ const PlaceOfService = (props) => {
     // set client place of service
     setClientPlaceOfService(event.target.value);
 
-    getItems(event.target.value).then((response) => {
-      if (response) {
-        if (response.data.error) {
-          setError(true);
-          setErrMsg(response.data.error);
+    if (event.target.value.length) {
+      getItems(event.target.value).then((response) => {
+        if (response) {
+          if (response.data.error) {
+            setError(true);
+            setErrMsg(response.data.error);
+          } else {
+            setError(false);
+            setItems(response.data.items);
+          }
         } else {
-          setError(false);
-          setItems(response.data.items);
+          setError(true);
+          setErrMsg("No response from server");
         }
-      } else {
-        setError(true);
-        setErrMsg("No response from server");
-      }
-    });
+      });
+    }
   };
 
   const handleItems = (name) => (event) => {

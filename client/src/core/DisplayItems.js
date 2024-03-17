@@ -1,5 +1,5 @@
 import React from "react";
-
+import { LBL_REQUESTS } from "./common/constants";
 const DisplayItems = ({ items, noQty }) => {
   return items.map((item, index) => (
     noQty && !item.quantity.length ? 
@@ -15,7 +15,10 @@ const DisplayItems = ({ items, noQty }) => {
 const Items = ({ index, item }) => {
   return (
     <li key={index}>
-      {item.item} - {item.quantity} - {item.notes}
+      {item.item == LBL_REQUESTS ?
+        `${item.item} - ${item.notes}` : 
+        `${item.item} - ${item.quantity} - ${item.notes}`
+      }
     </li>
   );
 }
