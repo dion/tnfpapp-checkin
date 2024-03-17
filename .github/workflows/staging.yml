@@ -45,5 +45,5 @@ jobs:
       run: |
         mkdir ~/.ssh
         echo "$remote_key" > ~/.ssh/gh_actions_key
-        chmod 755 ~/.ssh/gh_actions_key
+        chmod 700 ~/.ssh/gh_actions_key
         rsync -avzr -e "ssh -p ${remote_port} -i ~/.ssh/gh_actions_key -o StrictHostKeyChecking=no" ${local_dir} ${remote_user}@${remote_host}:${remote_dir}
