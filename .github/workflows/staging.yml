@@ -1,0 +1,54 @@
+name: PHP Composer, NPM Build, and SCP
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.0'
+
+    - name: Install Composer dependencies
+      working-directory: api/config
+      run: composer install
+
+    - name: Install Node.js and NPM
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16.14.0'
+
+    - name: Install NPM dependencies and build
+      working-directory: client
+      run: |
+        npm install
+        npm run build
+
+    - name: SCP to Server
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        password: ${{ secrets.SERVER_PASSWORD }}
+        source: "api"
+        strip_components: 1
+        target: "/public_html/checkin/api"
+
+    - name: SCP to Server
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        password: ${{ secrets.SERVER_PASSWORD }}
+        source: "client/build"
+        strip_components: 1
+        target: "/public_html/checkin"
