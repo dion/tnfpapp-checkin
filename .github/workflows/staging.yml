@@ -52,13 +52,23 @@ jobs:
       env:
         SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
  
-    - name: Send files
+    - name: Send api files
       run: "rsync -avO ${{ env.RSYNC_FLAGS }} ./api/ ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.DESTINATION }}"
       env:
         RSYNC_FLAGS: '--no-o --no-g --no-perms'
         EXCLUDES: bin/rsync-excludes.txt
         SSH_HOST: cloudways
         DESTINATION: "/home/master/applications/xmdqhzgkdn/public_html/checkin/api/"
+
+    - name: Send build files
+      run: "rsync -avO ${{ env.RSYNC_FLAGS }} ./client/build/ ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.DESTINATION }}"
+      env:
+        RSYNC_FLAGS: '--no-o --no-g --no-perms'
+        EXCLUDES: bin/rsync-excludes.txt
+        SSH_HOST: cloudways
+        DESTINATION: "/home/master/applications/xmdqhzgkdn/public_html/checkin/"
+
+    
  
 
     
