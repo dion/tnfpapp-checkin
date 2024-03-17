@@ -521,7 +521,6 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
                               rows="8"
                               value={internalNotes}
                               onChange={handleNotesChange}></textarea>
-                              {internalNotes}
                           </div>
                         : null}
                       </div>
