@@ -248,7 +248,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
       clients.serving.forEach(item => {
         if (item.c_id == client.c_id) {
           item.items.forEach(itm => {
-            if (!itm.quantity) {
+            if (!itm.quantity && itm.name !== LBL_REQUESTS) {
               hasError = true;
               errorMessage = `Error: User can't have empty items!`;
             }
