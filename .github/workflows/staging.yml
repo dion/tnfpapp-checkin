@@ -1,5 +1,9 @@
 name: PHP Composer, NPM Build, and SCP
 
+env:
+  SSH_USER: ${{ secrets.SERVER_USERNAME }}
+  SSH_HOST: ${{ secrets.SERVER_HOST }}
+
 on:
   push:
     branches:
@@ -33,30 +37,28 @@ jobs:
         npm install
         CI=false npm run build
 
-    - name: Write SSH private key to file
-      run: echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_private_key.txt
+    - name: Configure SSH
+      run: |
+        mkdir -p ~/.ssh/
+        echo "$SSH_KEY" > ~/.ssh/deploy.key
+        chmod 600 ~/.ssh/deploy.key
+        cat >>~/.ssh/config <<END
+        Host cloudways
+          HostName $SSH_HOST
+          User $SSH_USER
+          IdentityFile ~/.ssh/deploy.key
+          StrictHostKeyChecking no
+        END
+      env:
+        SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+ 
+    - name: Send files
+      run: "rsync -avO ${{ env.RSYNC_FLAGS }} ./api/ ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.DESTINATION }}"
+      env:
+        RSYNC_FLAGS: '' #--dry-run
+        EXCLUDES: bin/rsync-excludes.txt
+        SSH_HOST: cloudways
+        DESTINATION: "/home/master/applications/xmdqhzgkdn/public_html/checkin/api/"
+ 
 
-    - name: Print contents of SSH private key file
-      run: cat ssh_private_key.txt
-
-    - name: SCP to Server
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.SERVER_HOST }}
-        username: ${{ secrets.SERVER_USERNAME }}
-        password: ${{ secrets.SERVER_PASSWORD }}
-        source: "api/*"
-        strip_components: 1
-        target: "/home/master/applications/xmdqhzgkdn/public_html/checkin/api"
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-    - name: SCP to Server
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.SERVER_HOST }}
-        username: ${{ secrets.SERVER_USERNAME }}
-        password: ${{ secrets.SERVER_PASSWORD }}
-        source: "client/build/*"
-        strip_components: 1
-        target: "/home/master/applications/xmdqhzgkdn/public_html/checkin/"
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
+    
