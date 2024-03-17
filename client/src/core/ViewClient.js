@@ -2,11 +2,11 @@ import React, { Fragment, useState } from "react";
 import { Link, Redirect, withRouter } from "react-router-dom";
 
 const ViewClient = ({ client }) => {
-  const [redirect, setRedirect] = useState(false);
+  // const [redirect, setRedirect] = useState(false);
 
-  if (redirect) {
-    return <Redirect to="/" />;
-  }
+  // if (redirect) {
+  //   return <Redirect to="/" />;
+  // }
 
   const buttons = () => (
     <div className="row" style={{ paddingTop: 15 }}>
