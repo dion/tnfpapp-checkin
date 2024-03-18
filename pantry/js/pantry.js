@@ -151,6 +151,17 @@ pantryApp.controller('setCtrl', function($scope, $http){
 	
 });
 
+function formatDate(date) {
+	// Get year, month, and date components from the Date object
+	const year = date.getFullYear();
+	// Add 1 to month because getMonth() returns zero-based values (0 for January, 1 for February, etc.)
+	const month = String(date.getMonth() + 1).padStart(2, '0'); // Ensure 2 digits with leading zero
+	const day = String(date.getDate()).padStart(2, '0'); // Ensure 2 digits with leading zero
+	
+	// Return formatted date string in yy-mm-dd format
+	return `${year}-${month}-${day}`;
+}
+
 pantryApp.controller('editController', function ($scope, $http, $routeParams, $location){ 
 
 	$scope.placeOfServiceOptions = [
@@ -181,8 +192,8 @@ pantryApp.controller('editController', function ($scope, $http, $routeParams, $l
 
 	.success(function(data, status) {
 		$scope.programOptions = data.items;
-		
-		console.log(data.items, 'data.items')
+		$scope.dateOfVisit = formatDate(new Date());
+		// console.log(data.items, 'data.items')
 	})
 	
 	.error(function(data, status) {

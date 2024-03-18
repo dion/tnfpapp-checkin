@@ -13,7 +13,7 @@
 			
 		<!-- /widget-header -->
 		<div class="widget-content">
-			 <form id="edit-profile" class="form-horizontal">
+			 <form id="edit-profile" class="form-horizontal" autocomplete="off">
 				<fieldset>
 					<div class="form-actions" style="text-align:right;">
 						<button type="submit" class="btn btn-primary" ng-click="update()">Save</button> 
@@ -82,7 +82,7 @@
 					<div class="control-group">											
 						<label class="control-label" for="employed">Head of household currently employed?</label>
 						<div class="controls">
-							<select id="employed" class="span4" ng-model="client[0].employed" data-validation="required" data-validation-error-msg="This field is required.">
+							<select id="employed" class="span4" ng-model="client[0].employed">
 								<option value="">- Select -</option>
 								<option value="yes">Yes</option>
 								<option value="no">No</option>
@@ -206,7 +206,7 @@
 			
 		<!-- /widget-header -->
 		<div class="widget-content">
-			<form id="edit-profile" class="form-horizontal">
+			<form id="edit-profile" class="form-horizontal" autocomplete="off">
 				<fieldset>		
 					<br/>
 					
@@ -333,7 +333,8 @@
 	$( "#lastDateWorked" ).datepicker({
       changeMonth: true,
       changeYear: true,
-	  dateFormat: 'yy-mm-dd'
+	  dateFormat: 'yy-mm-dd',
+	  yearRange: "1940:2027" 
     });
 	$( "#incomeUpdated" ).datepicker({
       changeMonth: true,
@@ -343,7 +344,8 @@
 	$( "#comments" ).datepicker({
       changeMonth: true,
       changeYear: true,
-	  dateFormat: "yy-mm-dd"
+	  dateFormat: "yy-mm-dd",
+	  yearRange: "1940:2027"
     });
   });
 </script>
