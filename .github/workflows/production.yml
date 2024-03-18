@@ -1,0 +1,74 @@
+name: PHP Composer, NPM Build, and SCP
+
+env:
+  SSH_USER: ${{ secrets.SERVER_USERNAME }}
+  SSH_HOST: ${{ secrets.SERVER_HOST }}
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.0'
+
+    - name: Install Composer dependencies
+      working-directory: api/config
+      run: composer install
+
+    - name: Install Node.js and NPM
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16.14.0'
+
+    - name: Install NPM dependencies and build
+      working-directory: client
+      run: |
+        npm install
+        CI=false npm run build
+
+    - name: Configure SSH
+      run: |
+        mkdir -p ~/.ssh/
+        echo "$SSH_KEY" > ~/.ssh/deploy.key
+        chmod 600 ~/.ssh/deploy.key
+        cat >>~/.ssh/config <<END
+        Host cloudways
+          HostName $SSH_HOST
+          User $SSH_USER
+          IdentityFile ~/.ssh/deploy.key
+          StrictHostKeyChecking no
+        END
+      env:
+        SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+ 
+    - name: Send api files
+      run: "rsync -avO ${{ env.RSYNC_FLAGS }} ./api/ ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.DESTINATION }}"
+      env:
+        RSYNC_FLAGS: '--no-o --no-g --no-perms'
+        EXCLUDES: bin/rsync-excludes.txt
+        SSH_HOST: cloudways
+        DESTINATION: "/home/master/applications/szdywuqbaz/public_html/checkin/api/"
+
+    - name: Send build files
+      run: "rsync -avO ${{ env.RSYNC_FLAGS }} ./client/build/ ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:${{ env.DESTINATION }}"
+      env:
+        RSYNC_FLAGS: '--no-o --no-g --no-perms'
+        EXCLUDES: bin/rsync-excludes.txt
+        SSH_HOST: cloudways
+        DESTINATION: "/home/master/applications/szdywuqbaz/public_html/checkin/"
+
+    
+ 
+
+    
