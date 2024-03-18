@@ -1,1 +1,0 @@
-{"version":3,"sources":["styles.css"],"names":[],"mappings":"AAAA,4BACI,OAAQ,CACR,iBAAkB,CAClB,SACJ","file":"main.2ac0cdc8.chunk.css","sourcesContent":["#servingModal .modal-dialog {\n    right: 0;\n    position: absolute;\n    width: 35%;\n}"]}
