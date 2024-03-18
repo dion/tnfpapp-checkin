@@ -9,12 +9,13 @@ try{
 	if(isset($_POST['dateOfVisit']) && isset($_POST['program']) && isset($_POST['volunteer'])){
 		$weight = $_POST['weight'] == 'undefined' ? '' : $_POST['weight'];
 		$numOfItems = $_POST['numOfItems'] == 'undefined' ? '' : $_POST['numOfItems'];
+		$dateOfVisit = isset($_POST['dateOfVisit']) ? strtotime($_POST['dateOfVisit']) : '';
 		
 		$stmt = $objDb->prepare('INSERT INTO visits (`place_of_service`, `date_of_visit`, `lname`, `fname`, `how_many_in_house`, `phone`, `email`, `program`, `volunteer`, `numBags`, `weight`, `numOfItems`, `visitNotes`, `client_id`) 
 						VALUES (:placeOfService, :dateOfVisit, :lname, :fname, :inHouse, :phone, :email, :program, :volunteer, :numBags, :weight, :numOfItems, :visitNotes, :id)');
 
 						// TODO: convert $_POST['dateOfVisit'] to date format or something
-		if(!$stmt->execute(array('placeOfService' => $_POST['placeOfService'], 'dateOfVisit' => $_POST['dateOfVisit'], 'lname' => $_POST['lname'], 'fname' => $_POST['fname'], 'inHouse' => $_POST['inHouse'], 
+		if(!$stmt->execute(array('placeOfService' => $_POST['placeOfService'], 'dateOfVisit' => $dateOfVisit, 'lname' => $_POST['lname'], 'fname' => $_POST['fname'], 'inHouse' => $_POST['inHouse'], 
 						'phone' => $_POST['phone'], 'email' => $_POST['email'], 'program' => $_POST['program'], 'volunteer' => $_POST['volunteer'], 
 						'numBags' => isset($_POST['numBags']) ? $_POST['numBags'] : 0, 
 						'weight' => $weight, 
