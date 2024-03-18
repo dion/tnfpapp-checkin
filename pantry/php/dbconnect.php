@@ -1,9 +1,13 @@
 <?php
+require_once __DIR__ . '/vendor/autoload.php';
+
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->safeLoad();
 try {
-	$host = "localhost";
-	$dbname = "tnfp_prod";
-	$user = "tnfpu";
-	$pass = "Pantry123";
+	$host = $_ENV['PANTRY_DBHOST'] ?? null;
+	$dbname = $_ENV['PANTRY_DBNAME'] ?? null;
+	$user = $_ENV['PANTRY_DBUSER'] ?? null;
+	$pass = $_ENV['PANTRY_DBPASS'] ?? null;
 
 	$objDb = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
 	$objDb->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
