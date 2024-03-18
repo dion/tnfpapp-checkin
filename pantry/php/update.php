@@ -1,7 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 try{
 	if($_POST['id'] === 'undefined'){
 		throw new PDOException('Empty data');
@@ -11,20 +8,12 @@ try{
 
 	if(isset($_POST['dateOfVisit']) && isset($_POST['program']) && isset($_POST['volunteer'])){
 		$weight = $_POST['weight'] == 'undefined' ? '' : $_POST['weight'];
-		$numOfItems = $_POST['numOfItems'] == 'undefined' ? '' : $_POST['numOfItems'];
-		$dateOfVisit = $_POST['dateOfVisit'] == 'undefined' ? '' : $_POST['dateOfVisit'];
-		$numBags = $_POST['numBags'] == 'undefined' ? '' : $_POST['numBags'];
+		$numOfItems = $_POST['numOfItems'] == 'undefined' ? 1 : $_POST['numOfItems'];
 		
-		$stmt = $objDb->prepare('INSERT INTO visits (`place_of_service`, `date_of_visit`, `lname`, `fname`, `how_many_in_house`, `phone`, `email`, `program`, `volunteer`, `numBags`, `weight`, `numOfItems`, `visitNotes`, `client_id`) 
-						VALUES (:placeOfService, :dateOfVisit, :lname, :fname, :inHouse, :phone, :email, :program, :volunteer, :numBags, :weight, :numOfItems, :visitNotes, :id)');
-
-						// TODO: convert $_POST['dateOfVisit'] to date format or something
-		if(!$stmt->execute(array('placeOfService' => $_POST['placeOfService'], 'dateOfVisit' => $dateOfVisit, 'lname' => $_POST['lname'], 'fname' => $_POST['fname'], 'inHouse' => $_POST['inHouse'], 
-						'phone' => $_POST['phone'], 'email' => $_POST['email'], 'program' => $_POST['program'], 'volunteer' => $_POST['volunteer'], 
-						'numBags' => $numBags, 
-						'weight' => $weight, 
-						'numOfItems' => $numOfItems, 
-						'visitNotes' => $_POST['visitNotes'], 'id' => $_POST['id']))){
+		$stmt = $objDb->prepare('INSERT INTO visits (`place_of_service`, `date_of_visit`, `lname`, `fname`, `how_many_in_house`, `phone`, `email`, `program`, `volunteer`, `weight`, `numOfItems`, `visitNotes`, `client_id`) 
+						VALUES (:placeOfService, :dateOfVisit, :lname, :fname, :inHouse, :phone, :email, :program, :volunteer, :weight, :numOfItems, :visitNotes, :id)');
+		if(!$stmt->execute(array('placeOfService' => $_POST['placeOfService'], 'dateOfVisit' => $_POST['dateOfVisit'], 'lname' => $_POST['lname'], 'fname' => $_POST['fname'], 'inHouse' => $_POST['inHouse'], 
+						'phone' => $_POST['phone'], 'email' => $_POST['email'], 'program' => $_POST['program'], 'volunteer' => $_POST['volunteer'], 'weight' => $weight, 'numOfItems' => $numOfItems, 'visitNotes' => $_POST['visitNotes'], 'id' => $_POST['id']))){
 							 
 			throw new PDOException('The execute method failed');
 		}
@@ -40,9 +29,7 @@ try{
 		echo json_encode(array(
 			'error' => false,
 			'client' => $row
-		));
-
-		// , JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
+		), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
 		
 	} else {
 	
@@ -58,8 +45,7 @@ try{
 		echo json_encode(array(
 			'error' => false,
 			'test' => 'passed'
-		));
-		// , JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
+		), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
 		
 	}
 } catch(PDOException $e) {
@@ -67,6 +53,6 @@ try{
 	echo json_encode(array(
 		'error' => true,
 		'message' => $e->getMessage()
-	));
-	// , JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
+	), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+	
 }
