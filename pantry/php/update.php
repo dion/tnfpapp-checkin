@@ -14,7 +14,7 @@ try{
 						VALUES (:placeOfService, :dateOfVisit, :lname, :fname, :inHouse, :phone, :email, :program, :volunteer, :numBags, :weight, :numOfItems, :visitNotes, :id)');
 
 						// TODO: convert $_POST['dateOfVisit'] to date format or something
-		if(!$stmt->execute(array('placeOfService' => $_POST['placeOfService'], 'dateOfVisit' => strtotime($_POST['dateOfVisit']), 'lname' => $_POST['lname'], 'fname' => $_POST['fname'], 'inHouse' => $_POST['inHouse'], 
+		if(!$stmt->execute(array('placeOfService' => $_POST['placeOfService'], 'dateOfVisit' => $_POST['dateOfVisit'], 'lname' => $_POST['lname'], 'fname' => $_POST['fname'], 'inHouse' => $_POST['inHouse'], 
 						'phone' => $_POST['phone'], 'email' => $_POST['email'], 'program' => $_POST['program'], 'volunteer' => $_POST['volunteer'], 'numBags' => $_POST['numBags'], 'weight' => $weight, 'numOfItems' => $numOfItems, 'visitNotes' => $_POST['visitNotes'], 'id' => $_POST['id']))){
 							 
 			throw new PDOException('The execute method failed');
