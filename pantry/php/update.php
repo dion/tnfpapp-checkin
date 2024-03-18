@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 try{
 	if($_POST['id'] === 'undefined'){
 		throw new PDOException('Empty data');
@@ -37,7 +40,9 @@ try{
 		echo json_encode(array(
 			'error' => false,
 			'client' => $row
-		), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+		));
+
+		// , JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
 		
 	} else {
 	
@@ -53,7 +58,8 @@ try{
 		echo json_encode(array(
 			'error' => false,
 			'test' => 'passed'
-		), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+		));
+		// , JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
 		
 	}
 } catch(PDOException $e) {
@@ -61,6 +67,6 @@ try{
 	echo json_encode(array(
 		'error' => true,
 		'message' => $e->getMessage()
-	), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
-	
+	));
+	// , JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
 }
