@@ -763,8 +763,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
                                   className="form-control"
                                   id="numOfItems"
                                   onChange={handleInputChange}
-                                  value={formValues[itm.id]}
-                                  required
+                                  value="0"
                                   placeholder="enter quantity"
                                 />
                               </div>
