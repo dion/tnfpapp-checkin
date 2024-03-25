@@ -753,6 +753,22 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
                                 />
                               </div>
                             : null}
+                            {itm.itemType == "NoCount" ? 
+                              <div
+                                className="form-group col-sm"
+                              >
+                                <input
+                                  type="hidden"
+                                  name={itm.id}
+                                  className="form-control"
+                                  id="numOfItems"
+                                  onChange={handleInputChange}
+                                  value={formValues[itm.id]}
+                                  required
+                                  placeholder="enter quantity"
+                                />
+                              </div>
+                            : null}
                           </div>
                           {itm.item == LBL_REQUESTS ?
                             <div className="col-md-12">
