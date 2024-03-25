@@ -299,7 +299,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
             item: itm.item,
             notes: Object.keys(formValues).includes(itm.id + '-notes') ? formValues[itm.id + '-notes'] : '',
             weight: itm.itemType == 'Weight' ? formValues[itm.id] : '',
-            numOfItems: itm.itemType == 'Number' ? formValues[itm.id] : '',
+            numOfItems: itm.itemType == 'Number' || itm.itemType == 'NoCount' ? formValues[itm.id] : '',
             place_of_service: itm.place_of_service
           };
         
@@ -763,7 +763,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
                                   className="form-control"
                                   id="numOfItems"
                                   onChange={handleInputChange}
-                                  value="0"
+                                  value={formValues[itm.id] = 0}
                                   placeholder="enter quantity"
                                 />
                               </div>
