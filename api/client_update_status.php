@@ -46,7 +46,7 @@ if($jwt){
         $client->c_id = $data->client->c_id;
         $client->status = $data->client->status;
         $client->placeOfService = $data->client->placeOfService;
-        $client->date_of_visit = $data->client->date_of_visit; // to use for set date manually for visits
+        $client->date_of_visit = isset($data->client->date_of_visit) ? $data->client->date_of_visit : null; // to use for set date manually for visits
         $client->checked_in = $data->client->checked_in; // to use for set date manually for visits
         $client->errors = [];
 

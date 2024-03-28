@@ -26,8 +26,12 @@ class Client{
 	public $placeOfService;
 	public $methodOfPickup;
 	public $error;
+	public $errors;
 	public $items;
 	public $notes;
+	public $date_of_visit;
+	public $checked_in;
+
 
 	// constructor
 	public function __construct($db){
@@ -378,7 +382,8 @@ class Client{
 						$stmt3->bindParam(':dateOfVisit', $this->checked_in); // origDateFix this is the fix 
 					}
 
-					$stmt3->bindParam(':program', implode(", ", $items));
+					$theItems = implode(", ", $items);
+					$stmt3->bindParam(':program', $theItems);
 					$stmt3->bindParam(':numOfItems', $quantity);
 					$stmt3->bindParam(':c_id', $this->c_id);
 
