@@ -315,7 +315,7 @@ class Client{
 
     // update client status, update visit_items with checkout for that client
     function updateStatus(){
-
+		// TODO: do mysqli rollbacks if visit_items fails
     	// update client checkin table with new status
     	$query = "UPDATE " . $this->table_name . "
             		SET status = :status
@@ -365,7 +365,7 @@ class Client{
 
 					// insert into visits table also so that the visit appears in main app
 					$query3 = "INSERT INTO `visits` (`place_of_service`, `date_of_visit`, `program`, `numBags`, `weight`, `numOfItems`, `client_id`) 
-								VALUES (:placeOfService, :dateOfVisit, :program, 0, '', :numOfItems, :c_id)";
+								VALUES (:placeOfService, :dateOfVisit, :program, 0, 0, :numOfItems, :c_id)";
 
 					// prepare the query
 					$stmt3 = $this->conn->prepare($query3);
