@@ -9,9 +9,11 @@ $pos = $_GET['pos'];
 
 if ($client !== null && $timestamp !== null) {
     $totalQuantity = 0;
+    $items = [];
+
     $database = new Database();
     $db = $database->getConnection();
-    $selectVisitItems = "SELECT quantity FROM visit_items WHERE c_id = :client and DATE(timestamp) = :timestamp";
+    $selectVisitItems = "SELECT quantity, item FROM visit_items WHERE c_id = :client and DATE(timestamp) = :timestamp";
     $stmt = $db->prepare($selectVisitItems);
     $stmt->bindParam(":client", $client);
     $stmt->bindParam(":timestamp", $timestamp);
@@ -21,14 +23,17 @@ if ($client !== null && $timestamp !== null) {
     foreach ($rows as $row) {
         $quantity = $row['quantity'];
         $totalQuantity += intVal($quantity);
+        array_push($items, $row['item']);
     }
 
-    $insertQuery = "INSERT INTO visits (place_of_service, date_of_visit, numOfItems, client_id) 
-        VALUES (:place_of_service, :date_of_visit, :numOfItems, :client_id)";
+    $insertQuery = "INSERT INTO visits (place_of_service, date_of_visit, program, numOfItems, client_id) 
+        VALUES (:place_of_service, :date_of_visit, :program, :numOfItems, :client_id)";
     $stmtInsert = $db->prepare($insertQuery);
 
+    $theItems = implode(", ", $items);
     $stmtInsert->bindParam(':place_of_service', $pos);
     $stmtInsert->bindParam(':date_of_visit', $timestamp);
+    $stmtInsert->bindParam(':program', $theItems);
     $stmtInsert->bindParam(':numOfItems', $totalQuantity);
     $stmtInsert->bindParam(':client_id', $client);
 
