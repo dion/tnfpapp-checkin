@@ -9,6 +9,7 @@ $pos = $_GET['pos'];
 
 if ($client !== null && $timestamp !== null) {
     $totalQuantity = 0;
+    $numOfItems = 0;
     $items = [];
 
     $database = new Database();
@@ -22,19 +23,21 @@ if ($client !== null && $timestamp !== null) {
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);    
     foreach ($rows as $row) {
         $quantity = $row['quantity'];
+        $numOfItems = $numOfItems + 1;
         $totalQuantity += intVal($quantity);
         array_push($items, $row['item']);
     }
 
-    $insertQuery = "INSERT INTO visits (place_of_service, date_of_visit, program, numOfItems, client_id) 
-        VALUES (:place_of_service, :date_of_visit, :program, :numOfItems, :client_id)";
+    $insertQuery = "INSERT INTO visits (place_of_service, date_of_visit, program, weight, numOfItems, client_id) 
+        VALUES (:place_of_service, :date_of_visit, :program, :weight, :numOfItems, :client_id)";
     $stmtInsert = $db->prepare($insertQuery);
 
     $theItems = implode(", ", $items);
     $stmtInsert->bindParam(':place_of_service', $pos);
     $stmtInsert->bindParam(':date_of_visit', $timestamp);
     $stmtInsert->bindParam(':program', $theItems);
-    $stmtInsert->bindParam(':numOfItems', $totalQuantity);
+    $stmtInsert->bindParam(':weight', $totalQuantity);
+    $stmtInsert->bindParam(':numOfItems', $numOfItems);
     $stmtInsert->bindParam(':client_id', $client);
 
     // Execute the insert statement
