@@ -365,7 +365,7 @@ class Client{
 
 					// insert into visits table also so that the visit appears in main app
 					$query3 = "INSERT INTO `visits` (`place_of_service`, `date_of_visit`, `program`, `numBags`, `weight`, `numOfItems`, `client_id`) 
-								VALUES (:placeOfService, :dateOfVisit, :program, 0, 0, :numOfItems, :c_id)";
+								VALUES (:placeOfService, :dateOfVisit, :program, 0, '', :numOfItems, :c_id)";
 
 					// prepare the query
 					$stmt3 = $this->conn->prepare($query3);
