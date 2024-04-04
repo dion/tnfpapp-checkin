@@ -299,7 +299,7 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
             item: itm.item,
             notes: Object.keys(formValues).includes(itm.id + '-notes') ? formValues[itm.id + '-notes'] : '',
             weight: itm.itemType == 'Weight' ? formValues[itm.id] : '',
-            numOfItems: itm.itemType == 'Number' || itm.itemType == 'NoCount' ? formValues[itm.id] : '',
+            numOfItems: itm.itemType == 'Number' ? formValues[itm.id] : '',
             place_of_service: itm.place_of_service
           };
         
@@ -749,21 +749,6 @@ const Modal = ({ modalId, client, type, refreshFunction, place }) => {
                                   onChange={handleInputChange}
                                   value={formValues[itm.id]}
                                   required
-                                  placeholder="enter quantity"
-                                />
-                              </div>
-                            : null}
-                            {itm.itemType == "NoCount" ? 
-                              <div
-                                className="form-group col-sm"
-                              >
-                                <input
-                                  type="hidden"
-                                  name={itm.id}
-                                  className="form-control"
-                                  id="numOfItems"
-                                  onChange={handleInputChange}
-                                  value={formValues[itm.id] = 0}
                                   placeholder="enter quantity"
                                 />
                               </div>
