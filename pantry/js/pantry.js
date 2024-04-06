@@ -221,6 +221,9 @@ pantryApp.controller('editController', function ($scope, $http, $routeParams, $l
 			
 			$scope.volunteers = data.volunteers;
 			$scope.client[0].ageGroups = $scope.client[0].ageGroups.split(',');
+			if ($scope.client[0].employed === null || $scope.client[0].employed == 'null') {
+				$scope.client[0].employed = "";
+			}
 			
 			console.log($scope.visits)
 		}
