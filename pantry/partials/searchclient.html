@@ -20,7 +20,7 @@
 								<td>Phone Number</td>
 								<td>Email</td>
 								<td># In House</td>
-								<td>Comments</td>
+								<td>DOB</td>
 							</tr>
 							<tr>
 								<td><select ng-model='form.idType' ng-options='option.value as option.name for option in typeOptions'></select></td>
@@ -40,7 +40,7 @@
 								<td><input type="text" class="span2" id="phone" ng-model="phone"></td>
 								<td><input type="text" class="span2" id="email" ng-model="email"></td>
 								<td><input type="text" class="span2" id="numInHouse" ng-model="numInHouse"></td>
-								<td><input type="text" class="span2" id="comments" ng-model="comments"></td>
+								<td><input type="text" class="span2" id="comments" ng-model="comments" autocomplete="off"></td>
 							</tr>
 						</table>										
 					</div> <!-- /control-group -->
@@ -75,6 +75,15 @@
 
 
 <script>
+$(function() {
+    $( "#comments" ).datepicker({
+	  autoOpen: false,
+      changeMonth: true,
+      changeYear: true,
+	  dateFormat: 'yy-mm-dd',
+	  yearRange: "1940:2027" 
+    });
+});
 /*$(function() {
 	//$('select.SlectBox')[0].sumo.selectItem(2);
 	

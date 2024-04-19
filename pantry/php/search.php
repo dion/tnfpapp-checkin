@@ -111,19 +111,25 @@ try {
 			}
 		}
 		
+		// TODO: comments is now date of birth
 		if($_POST['comments'] != 'undefined'){
+			$year = date('Y', strtotime($_POST['comments']));
+			$month = date('m', strtotime($_POST['comments']));
+
 			if($flag == 0){
-				$sql .= "comments LIKE :comments";
+				$sql .= "SUBSTRING(comments, 5, 4) = $year and SUBSTRING(comments, 1,2) = $month";
+				// $sql .= "comments LIKE :comments";
 				$flag = 1;
 			} else {
-				$sql .= " AND comments LIKE :comments";
+				$sql .= " AND SUBSTRING(comments, 5, 4) = $year and SUBSTRING(comments, 1,2) = $month";
+				// $sql .= " AND comments LIKE :comments";
 			}
 			
-			if($_POST['comments'] == 'contains'){
-				$values['comments'] = '%'.$_POST['comments'].'%';
-			} else {
-				$values['comments'] = $_POST['comments'].'%';
-			}
+			// if($_POST['comments'] == 'contains'){
+			// 	$values['comments'] =  $year; // '%'.$_POST['comments'].'%';
+			// } else {
+			// 	$values['comments'] = $year; // $_POST['comments'].'%';
+			// }
 		}
 		
 		$stmt = $objDb->prepare($sql);
